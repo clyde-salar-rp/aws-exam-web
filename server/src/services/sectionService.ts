@@ -6,7 +6,7 @@ import logger, { sanitizeError } from "../lib/logger.js";
 import { SUBTOPICS, SECTION_FILE_MAPPING } from "../data/topics.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const sectionsDir = "/Users/clydesalar/aws_exam_cli/sections";
+const sectionsDir = path.join(__dirname, "..", "data", "sections");
 
 export interface Section {
   id: string;
