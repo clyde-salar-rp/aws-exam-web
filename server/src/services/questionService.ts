@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import logger from "../lib/logger.js";
 import {
   getTopicStats,
   getResultsByQuestionId,
@@ -36,6 +37,7 @@ export function loadQuestions(): Question[] {
   const questionsPath = path.join(__dirname, "..", "data", "questions.json");
   const data = JSON.parse(fs.readFileSync(questionsPath, "utf-8"));
   questionsCache = data.questions as Question[];
+  logger.debug({ count: questionsCache.length }, "Questions loaded");
   return questionsCache;
 }
 
@@ -67,6 +69,7 @@ async function getTopicWeights(): Promise<Record<string, number>> {
     // Range: 0.3 (for 100% accuracy) to 1.3 (for 0% accuracy)
     weights[subtopic] = 1 - accuracy + 0.3;
   }
+  logger.debug({ weights }, "Topic weights calculated");
   return weights;
 }
 
@@ -96,6 +99,8 @@ async function weightedRandomSelection(
 ): Promise<Question[]> {
   if (candidates.length === 0) return [];
 
+  logger.debug({ candidateCount: candidates.length, requestedCount: count }, "Starting weighted selection");
+
   // Calculate weights for all candidates
   const weights = await Promise.all(
     candidates.map(async (q) => ({
@@ -124,6 +129,7 @@ async function weightedRandomSelection(
     }
   }
 
+  logger.debug({ selectedCount: selected.length }, "Weighted selection complete");
   return selected;
 }
 
@@ -134,6 +140,7 @@ export async function selectQuestions(
   mode: SelectionMode = "adaptive",
   subtopic?: string
 ): Promise<Question[]> {
+  logger.debug({ count, mode, subtopic }, "Selecting questions");
   let candidates = loadQuestions();
 
   // Apply subtopic filter if specified
@@ -154,6 +161,7 @@ export async function selectQuestions(
         .filter(([_, stat]) => stat.total > 0 && stat.correct / stat.total < 0.7)
         .map(([topic]) => topic);
 
+      logger.debug({ weakTopics }, "Weak topics identified");
       if (weakTopics.length > 0) {
         candidates = candidates.filter((q) => weakTopics.includes(q.subtopic));
       }
@@ -163,6 +171,7 @@ export async function selectQuestions(
     case "missed": {
       // Previously missed questions
       const missedIds = new Set(await getMissedQuestionIds());
+      logger.debug({ missedCount: missedIds.size }, "Missed questions found");
       if (missedIds.size > 0) {
         candidates = candidates.filter((q) => missedIds.has(q.id));
       }
@@ -173,6 +182,7 @@ export async function selectQuestions(
       // Questions not yet answered
       const answeredIds = new Set(await getAnsweredQuestionIds());
       candidates = candidates.filter((q) => !answeredIds.has(q.id));
+      logger.debug({ newCount: candidates.length }, "New questions available");
       // Random selection for new questions
       const shuffledNew = [...candidates].sort(() => Math.random() - 0.5);
       return shuffledNew.slice(0, count);

@@ -1,4 +1,5 @@
 import { Router } from "express";
+import logger from "../lib/logger.js";
 import {
   getAllQuestions,
   getQuestionById,
@@ -18,7 +19,7 @@ router.get("/", async (req, res) => {
     const questions = await selectQuestions(count, mode, subtopic);
     res.json(questions);
   } catch (error) {
-    console.error("Error getting questions:", error);
+    logger.error({ err: error, query: req.query }, "Error getting questions");
     res.status(500).json({ error: "Failed to get questions" });
   }
 });
@@ -29,7 +30,7 @@ router.get("/all", (req, res) => {
     const questions = getAllQuestions();
     res.json(questions);
   } catch (error) {
-    console.error("Error getting all questions:", error);
+    logger.error({ err: error }, "Error getting all questions");
     res.status(500).json({ error: "Failed to get questions" });
   }
 });
@@ -43,7 +44,7 @@ router.get("/:id", (req, res) => {
     }
     res.json(question);
   } catch (error) {
-    console.error("Error getting question:", error);
+    logger.error({ err: error, questionId: req.params.id }, "Error getting question");
     res.status(500).json({ error: "Failed to get question" });
   }
 });

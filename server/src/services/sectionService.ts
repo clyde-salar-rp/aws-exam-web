@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { marked } from "marked";
+import logger from "../lib/logger.js";
 import { SUBTOPICS, SECTION_FILE_MAPPING } from "../data/topics.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -39,7 +40,7 @@ export async function getSectionContent(id: string): Promise<Section | null> {
       content: html,
     };
   } catch (error) {
-    console.error(`Error reading section file: ${filePath}`, error);
+    logger.error({ err: error, filePath, sectionId: id }, "Error reading section file");
     return null;
   }
 }

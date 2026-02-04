@@ -3,6 +3,8 @@ import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
 
+import logger from "./lib/logger.js";
+import { requestLogger } from "./middleware/requestLogger.js";
 import questionsRouter from "./routes/questions.js";
 import sectionsRouter from "./routes/sections.js";
 import sessionsRouter from "./routes/sessions.js";
@@ -16,6 +18,7 @@ const PORT = process.env.PORT || 3001;
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(requestLogger);
 
 // API routes
 app.use("/api/questions", questionsRouter);
@@ -37,8 +40,28 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+// Uncaught exception handlers
+process.on("uncaughtException", (err) => {
+  logger.fatal({ err }, "Uncaught exception");
+  process.exit(1);
+});
+
+process.on("unhandledRejection", (reason, promise) => {
+  logger.fatal({ reason }, "Unhandled rejection");
+  process.exit(1);
+});
+
+const server = app.listen(PORT, () => {
+  logger.info({ port: PORT }, "Server started");
+});
+
+// Graceful shutdown
+process.on("SIGTERM", () => {
+  logger.info("SIGTERM received, shutting down gracefully");
+  server.close(() => {
+    logger.info("Server closed");
+    process.exit(0);
+  });
 });
 
 export default app;

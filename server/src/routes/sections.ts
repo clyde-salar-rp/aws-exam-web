@@ -1,4 +1,5 @@
 import { Router } from "express";
+import logger from "../lib/logger.js";
 import { getAllSections, getSectionContent } from "../services/sectionService.js";
 
 const router = Router();
@@ -9,7 +10,7 @@ router.get("/", (req, res) => {
     const sections = getAllSections();
     res.json(sections);
   } catch (error) {
-    console.error("Error getting sections:", error);
+    logger.error({ err: error }, "Error getting sections");
     res.status(500).json({ error: "Failed to get sections" });
   }
 });
@@ -23,7 +24,7 @@ router.get("/:id", async (req, res) => {
     }
     res.json(section);
   } catch (error) {
-    console.error("Error getting section:", error);
+    logger.error({ err: error, sectionId: req.params.id }, "Error getting section");
     res.status(500).json({ error: "Failed to get section" });
   }
 });

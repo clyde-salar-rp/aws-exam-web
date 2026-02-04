@@ -2,6 +2,7 @@ import initSqlJs, { Database as SqlJsDatabase } from "sql.js";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import logger from "../lib/logger.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const dbPath = path.join(__dirname, "..", "..", "data", "exam.db");
@@ -15,9 +16,11 @@ async function initDb(): Promise<SqlJsDatabase> {
 
   // Try to load existing database
   if (fs.existsSync(dbPath)) {
+    logger.debug({ dbPath }, "Loading existing database");
     const buffer = fs.readFileSync(dbPath);
     db = new SQL.Database(buffer);
   } else {
+    logger.info({ dbPath }, "Creating new database");
     db = new SQL.Database();
   }
 
@@ -51,6 +54,7 @@ async function initDb(): Promise<SqlJsDatabase> {
   db.run(`CREATE INDEX IF NOT EXISTS idx_question_results_question ON question_results(question_id)`);
   db.run(`CREATE INDEX IF NOT EXISTS idx_question_results_subtopic ON question_results(subtopic)`);
 
+  logger.debug("Database schema initialized");
   saveDb();
   return db;
 }
@@ -64,6 +68,7 @@ function saveDb(): void {
     fs.mkdirSync(dir, { recursive: true });
   }
   fs.writeFileSync(dbPath, buffer);
+  logger.debug("Database saved to disk");
 }
 
 // Ensure db is initialized
@@ -106,6 +111,7 @@ export async function createSession(data: {
   const result = db.exec("SELECT last_insert_rowid() as id");
   const id = result[0].values[0][0] as number;
 
+  logger.debug({ sessionId: id, ...data }, "Session created");
   saveDb();
   return (await getSession(id))!;
 }
@@ -170,6 +176,7 @@ export async function createQuestionResult(data: {
     ]
   );
 
+  logger.debug({ questionId: data.question_id, isCorrect: data.is_correct }, "Question result saved");
   saveDb();
 }
 
@@ -295,4 +302,4 @@ export async function getTopicStats(): Promise<Record<string, { total: number; c
 }
 
 // Initialize database on module load
-initDb().catch(console.error);
+initDb().catch((err) => logger.error({ err }, "Failed to initialize database"));
