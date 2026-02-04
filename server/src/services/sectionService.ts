@@ -8,6 +8,28 @@ import { SUBTOPICS, SECTION_FILE_MAPPING } from "../data/topics.js";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const sectionsDir = path.join(__dirname, "..", "data", "sections");
 
+// Generate slug matching the TOC links in the markdown files
+function generateSlug(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[():,\[\].'""]/g, "") // Remove punctuation
+    .replace(/&/g, "") // Remove & (leaves space gap for double hyphen)
+    .replace(/ /g, "-") // Replace each space with hyphen (preserves double spaces -> double hyphens)
+    .replace(/[^\w-]/g, "") // Remove any remaining special chars
+    .replace(/^-+|-+$/g, ""); // Trim leading/trailing hyphens
+}
+
+// Configure marked with custom renderer that adds IDs to headings
+marked.use({
+  renderer: {
+    // Args: text (rendered), depth (level), raw (original text)
+    heading(text: string, depth: number, raw: string) {
+      const slug = generateSlug(raw);
+      return `<h${depth} id="${slug}">${text}</h${depth}>\n`;
+    },
+  },
+});
+
 export interface Section {
   id: string;
   title: string;
