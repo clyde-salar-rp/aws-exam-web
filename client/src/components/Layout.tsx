@@ -136,13 +136,17 @@ export function Layout({ children }: LayoutProps) {
         className={cn(
           'flex-1 flex flex-col transition-all duration-300',
           // Mobile: full width with top padding for header
-          'pt-14 md:pt-0',
-          // Desktop: margin for sidebar
+          'pt-14',
+          // Desktop: margin for sidebar and top padding for header
           collapsed ? 'md:ml-16' : 'md:ml-64'
         )}
       >
         {/* Desktop header bar with border - matches sidebar header height */}
-        <div className="hidden md:flex items-center justify-end h-14 px-6 border-b bg-background">
+        <div className="hidden md:flex items-center justify-end h-14 px-6 border-b bg-background fixed top-0 right-0 left-0 z-30 transition-all duration-300"
+          style={{
+            left: collapsed ? '4rem' : '16rem'
+          }}
+        >
           <ThemeToggle />
         </div>
 
