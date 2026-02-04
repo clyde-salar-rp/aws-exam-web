@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { cn } from '@/lib/utils'
 import { Home, BookOpen, BarChart2, FileText, GraduationCap, Menu, X } from 'lucide-react'
+import { ThemeToggle } from './ThemeToggle'
 
 interface LayoutProps {
   children: React.ReactNode
@@ -37,18 +38,21 @@ export function Layout({ children }: LayoutProps) {
   return (
     <div className="min-h-screen bg-background flex">
       {/* Mobile header */}
-      <header className="fixed top-0 left-0 right-0 z-40 h-14 border-b bg-background flex items-center px-4 md:hidden">
-        <button
-          onClick={() => setMobileOpen(true)}
-          className="p-2 rounded-md hover:bg-muted transition-colors"
-          aria-label="Open menu"
-        >
-          <Menu className="h-5 w-5" />
-        </button>
-        <Link to="/" className="flex items-center space-x-2 ml-2">
-          <GraduationCap className="h-6 w-6 shrink-0" />
-          <span className="font-bold">AWS Exam Prep</span>
-        </Link>
+      <header className="fixed top-0 left-0 right-0 z-40 h-14 border-b bg-background flex items-center justify-between px-4 md:hidden">
+        <div className="flex items-center">
+          <button
+            onClick={() => setMobileOpen(true)}
+            className="p-2 rounded-md hover:bg-muted transition-colors"
+            aria-label="Open menu"
+          >
+            <Menu className="h-5 w-5" />
+          </button>
+          <Link to="/" className="flex items-center space-x-2 ml-2">
+            <GraduationCap className="h-6 w-6 shrink-0" />
+            <span className="font-bold">AWS Exam Prep</span>
+          </Link>
+        </div>
+        <ThemeToggle />
       </header>
 
       {/* Mobile overlay */}
@@ -137,6 +141,10 @@ export function Layout({ children }: LayoutProps) {
           collapsed ? 'md:ml-16' : 'md:ml-64'
         )}
       >
+        {/* Desktop header with theme toggle */}
+        <div className="hidden md:flex justify-end mb-4 -mt-2">
+          <ThemeToggle />
+        </div>
         {children}
       </main>
     </div>
