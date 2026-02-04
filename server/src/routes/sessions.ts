@@ -1,5 +1,5 @@
 import { Router } from "express";
-import logger from "../lib/logger.js";
+import logger, { sanitizeError } from "../lib/logger.js";
 import {
   createSession,
   getAllSessions,
@@ -16,7 +16,7 @@ router.get("/", async (req, res) => {
     const sessions = await getAllSessions();
     res.json(sessions);
   } catch (error) {
-    logger.error({ err: error }, "Error getting sessions");
+    logger.error(sanitizeError(error), "Error getting sessions");
     res.status(500).json({ error: "Failed to get sessions" });
   }
 });
@@ -33,7 +33,7 @@ router.get("/:id", async (req, res) => {
     const results = await getResultsBySession(sessionId);
     res.json({ session, results });
   } catch (error) {
-    logger.error({ err: error, sessionId: req.params.id }, "Error getting session");
+    logger.error(sanitizeError(error), "Error getting session");
     res.status(500).json({ error: "Failed to get session" });
   }
 });
@@ -67,7 +67,7 @@ router.post("/", async (req, res) => {
 
     res.status(201).json(session);
   } catch (error) {
-    logger.error({ err: error }, "Error creating session");
+    logger.error(sanitizeError(error), "Error creating session");
     res.status(500).json({ error: "Failed to create session" });
   }
 });

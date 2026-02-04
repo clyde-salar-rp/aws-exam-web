@@ -16,4 +16,21 @@ const logger = pino({
   }),
 });
 
+// Helper to safely extract error info without exposing internals in production
+export function sanitizeError(error: unknown): object {
+  if (isDev) {
+    return { err: error };
+  }
+
+  // In production, only log the message, not stack traces or internal paths
+  if (error instanceof Error) {
+    return {
+      errorMessage: error.message,
+      errorName: error.name,
+    };
+  }
+
+  return { errorMessage: String(error) };
+}
+
 export default logger;

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import logger from "../lib/logger.js";
+import logger, { sanitizeError } from "../lib/logger.js";
 import { getProgressSummary, getTopicProgress } from "../services/progressService.js";
 
 const router = Router();
@@ -10,7 +10,7 @@ router.get("/", async (req, res) => {
     const progress = await getProgressSummary();
     res.json(progress);
   } catch (error) {
-    logger.error({ err: error }, "Error getting progress");
+    logger.error(sanitizeError(error), "Error getting progress");
     res.status(500).json({ error: "Failed to get progress" });
   }
 });
@@ -21,7 +21,7 @@ router.get("/topics", async (req, res) => {
     const topics = await getTopicProgress();
     res.json(topics);
   } catch (error) {
-    logger.error({ err: error }, "Error getting topic progress");
+    logger.error(sanitizeError(error), "Error getting topic progress");
     res.status(500).json({ error: "Failed to get topic progress" });
   }
 });

@@ -2,7 +2,7 @@ import initSqlJs, { Database as SqlJsDatabase } from "sql.js";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import logger from "../lib/logger.js";
+import logger, { sanitizeError } from "../lib/logger.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const dbPath = path.join(__dirname, "..", "..", "data", "exam.db");
@@ -302,4 +302,4 @@ export async function getTopicStats(): Promise<Record<string, { total: number; c
 }
 
 // Initialize database on module load
-initDb().catch((err) => logger.error({ err }, "Failed to initialize database"));
+initDb().catch((err) => logger.error(sanitizeError(err), "Failed to initialize database"));

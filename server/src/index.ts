@@ -3,7 +3,7 @@ import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
 
-import logger from "./lib/logger.js";
+import logger, { sanitizeError } from "./lib/logger.js";
 import { requestLogger } from "./middleware/requestLogger.js";
 import questionsRouter from "./routes/questions.js";
 import sectionsRouter from "./routes/sections.js";
@@ -42,12 +42,12 @@ if (process.env.NODE_ENV === "production") {
 
 // Uncaught exception handlers
 process.on("uncaughtException", (err) => {
-  logger.fatal({ err }, "Uncaught exception");
+  logger.fatal(sanitizeError(err), "Uncaught exception");
   process.exit(1);
 });
 
-process.on("unhandledRejection", (reason, promise) => {
-  logger.fatal({ reason }, "Unhandled rejection");
+process.on("unhandledRejection", (reason) => {
+  logger.fatal(sanitizeError(reason), "Unhandled rejection");
   process.exit(1);
 });
 
