@@ -59,6 +59,17 @@
 }
 
 /* Study content styles */
+
+/* Offset scroll position for sticky header when navigating to anchors */
+.study-content h1,
+.study-content h2,
+.study-content h3,
+.study-content h4,
+.study-content h5,
+.study-content h6 {
+  scroll-margin-top: 5rem;
+}
+
 .study-content h2 {
   @apply text-2xl font-bold mt-12 mb-6 pb-3 border-b-2 border-primary/20 text-primary;
 }

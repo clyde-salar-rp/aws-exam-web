@@ -1,5 +1,6 @@
-import { useState, useMemo } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import { useLocation } from 'react-router-dom'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { MasteryBadge } from '@/components/MasteryBadge'
@@ -13,6 +14,8 @@ function removeImageTags(html: string): string {
 
 export function Review() {
   const [selectedSection, setSelectedSection] = useState<string | null>(null)
+  const contentRef = useRef<HTMLDivElement>(null)
+  const location = useLocation()
 
   const { data: sections = [] } = useQuery({
     queryKey: ['sections'],
@@ -38,6 +41,46 @@ export function Review() {
     {} as Record<string, (typeof topics)[0]>
   )
 
+  // Scroll to hash element after content loads
+  useEffect(() => {
+    if (sectionContent && !contentLoading && location.hash) {
+      // Small delay to ensure DOM is updated
+      const timeoutId = setTimeout(() => {
+        const elementId = location.hash.slice(1) // Remove the # prefix
+        const element = document.getElementById(elementId)
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        }
+      }, 100)
+      return () => clearTimeout(timeoutId)
+    }
+  }, [sectionContent, contentLoading, location.hash])
+
+  // Handle clicks on internal anchor links
+  useEffect(() => {
+    const handleAnchorClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement
+      const anchor = target.closest('a')
+
+      if (anchor && anchor.hash && anchor.getAttribute('href')?.startsWith('#')) {
+        e.preventDefault()
+        const elementId = anchor.hash.slice(1)
+        const element = document.getElementById(elementId)
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+          // Update URL hash without causing navigation
+          window.history.pushState(null, '', anchor.hash)
+        }
+      }
+    }
+
+    const contentElement = contentRef.current
+    if (contentElement) {
+      contentElement.addEventListener('click', handleAnchorClick)
+      return () => contentElement.removeEventListener('click', handleAnchorClick)
+    }
+  }, [sectionContent])
+
   if (selectedSection && sectionContent) {
     return (
       <div className="min-h-screen">
@@ -56,7 +99,7 @@ export function Review() {
         </div>
 
         {/* Content area */}
-        <div className="pb-16">
+        <div className="pb-16" ref={contentRef}>
           {contentLoading ? (
             <div className="flex items-center justify-center py-12">
               <div className="text-muted-foreground">Loading content...</div>
