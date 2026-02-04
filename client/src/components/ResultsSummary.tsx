@@ -29,7 +29,7 @@ export function ResultsSummary({
           <div className="text-center">
             <div
               className={`text-5xl sm:text-6xl font-bold ${
-                isPassing ? 'text-green-600' : 'text-red-600'
+                isPassing ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
               }`}
             >
               {Math.round(results.percentage)}%
@@ -38,7 +38,7 @@ export function ResultsSummary({
               {results.correct} of {results.total} correct
             </p>
             <div className={`mt-4 text-base sm:text-lg font-medium ${
-              isPassing ? 'text-green-600' : 'text-red-600'
+              isPassing ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
             }`}>
               {isPassing ? 'PASSED' : 'NEEDS MORE PRACTICE'}
             </div>
@@ -47,17 +47,17 @@ export function ResultsSummary({
           <Progress value={results.percentage} className="h-3" />
 
           <div className="grid grid-cols-2 gap-4 text-center">
-            <div className="p-4 bg-green-50 rounded-lg">
-              <CheckCircle className="h-8 w-8 text-green-600 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-green-600">{results.correct}</div>
-              <div className="text-sm text-green-700">Correct</div>
+            <div className="p-4 bg-green-50 dark:bg-green-950/50 rounded-lg">
+              <CheckCircle className="h-8 w-8 text-green-600 dark:text-green-400 mx-auto mb-2" />
+              <div className="text-2xl font-bold text-green-600 dark:text-green-400">{results.correct}</div>
+              <div className="text-sm text-green-700 dark:text-green-400/80">Correct</div>
             </div>
-            <div className="p-4 bg-red-50 rounded-lg">
-              <XCircle className="h-8 w-8 text-red-600 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-red-600">
+            <div className="p-4 bg-red-50 dark:bg-red-950/50 rounded-lg">
+              <XCircle className="h-8 w-8 text-red-600 dark:text-red-400 mx-auto mb-2" />
+              <div className="text-2xl font-bold text-red-600 dark:text-red-400">
                 {results.total - results.correct}
               </div>
-              <div className="text-sm text-red-700">Incorrect</div>
+              <div className="text-sm text-red-700 dark:text-red-400/80">Incorrect</div>
             </div>
           </div>
 
@@ -86,8 +86,8 @@ export function ResultsSummary({
                 onClick={() => onReviewQuestion(index)}
                 className={`p-3 sm:p-2 rounded text-sm font-medium transition-colors ${
                   result.isCorrect
-                    ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                    : 'bg-red-100 text-red-700 hover:bg-red-200'
+                    ? 'bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300 hover:bg-green-200 dark:hover:bg-green-900'
+                    : 'bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-900'
                 }`}
               >
                 {index + 1}

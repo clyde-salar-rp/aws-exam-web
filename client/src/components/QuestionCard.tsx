@@ -41,8 +41,8 @@ export function QuestionCard({
     const isSelected = selectedAnswers.includes(letter)
     const isCorrect = question.correct_answers.includes(letter)
 
-    if (isCorrect) return 'bg-green-100 border-green-500'
-    if (isSelected && !isCorrect) return 'bg-red-100 border-red-500'
+    if (isCorrect) return 'bg-green-100 dark:bg-green-900/50 border-green-500 dark:border-green-600'
+    if (isSelected && !isCorrect) return 'bg-red-100 dark:bg-red-900/50 border-red-500 dark:border-red-600'
     return ''
   }
 
@@ -138,9 +138,9 @@ export function QuestionCard({
         )}
 
         {showResult && question.explanation && (
-          <div className="mt-4 p-4 bg-blue-50 rounded-lg">
-            <p className="text-sm font-medium text-blue-900">Explanation:</p>
-            <p className="text-sm text-blue-800 mt-1">{question.explanation}</p>
+          <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-950/50 rounded-lg">
+            <p className="text-sm font-medium text-blue-900 dark:text-blue-300">Explanation:</p>
+            <p className="text-sm text-blue-800 dark:text-blue-300/80 mt-1">{question.explanation}</p>
           </div>
         )}
       </CardContent>

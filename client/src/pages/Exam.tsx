@@ -246,7 +246,7 @@ export function Exam() {
               i === examState.currentIndex
                 ? 'bg-primary text-primary-foreground'
                 : examState.answers[q.id]
-                ? 'bg-green-100 text-green-700'
+                ? 'bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300'
                 : 'bg-muted'
             }`}
           >
