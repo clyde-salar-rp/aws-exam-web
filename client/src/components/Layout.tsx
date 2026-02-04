@@ -75,7 +75,7 @@ export function Layout({ children }: LayoutProps) {
           !mobileOpen && 'md:translate-x-0'
         )}
       >
-        <div className="p-4 border-b flex items-center justify-between">
+        <div className="h-14 px-4 border-b flex items-center justify-between">
           {/* Mobile close button */}
           <button
             onClick={() => setMobileOpen(false)}
@@ -131,22 +131,26 @@ export function Layout({ children }: LayoutProps) {
         </nav>
       </aside>
 
-      {/* Main content */}
-      <main
+      {/* Main content wrapper */}
+      <div
         className={cn(
-          'flex-1 p-4 md:p-6 transition-all duration-300',
+          'flex-1 flex flex-col transition-all duration-300',
           // Mobile: full width with top padding for header
-          'pt-20 md:pt-6',
+          'pt-14 md:pt-0',
           // Desktop: margin for sidebar
           collapsed ? 'md:ml-16' : 'md:ml-64'
         )}
       >
-        {/* Desktop header with theme toggle */}
-        <div className="hidden md:flex justify-end mb-4 -mt-2">
+        {/* Desktop header bar with border - matches sidebar header height */}
+        <div className="hidden md:flex items-center justify-end h-14 px-6 border-b bg-background">
           <ThemeToggle />
         </div>
-        {children}
-      </main>
+
+        {/* Main content */}
+        <main className="flex-1 p-4 md:p-6">
+          {children}
+        </main>
+      </div>
     </div>
   )
 }

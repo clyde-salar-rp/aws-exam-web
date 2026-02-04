@@ -1,21 +1,23 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { QuestionCard } from '@/components/QuestionCard'
 import { ExamConfigDialog } from '@/components/ExamConfigDialog'
 import { ResultsSummary } from '@/components/ResultsSummary'
-import { getQuestions, getTopicProgress, saveSession } from '@/lib/api'
+import { getQuestions, getTopicProgress, saveSession, getSession, getQuestion } from '@/lib/api'
 import type { ExamConfig, ExamResults, ExamState, Question } from '@/types'
 import { ChevronLeft, ChevronRight, Flag } from 'lucide-react'
 
 export function Exam() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
+  const [searchParams] = useSearchParams()
   const [configOpen, setConfigOpen] = useState(true)
   const [examState, setExamState] = useState<ExamState | null>(null)
   const [reviewIndex, setReviewIndex] = useState<number | null>(null)
+  const [loadingSession, setLoadingSession] = useState(false)
 
   const { data: topics = [] } = useQuery({
     queryKey: ['topicProgress'],
@@ -30,6 +32,64 @@ export function Exam() {
       queryClient.invalidateQueries({ queryKey: ['topicProgress'] })
     },
   })
+
+  // Load session for review if session ID is in URL
+  useEffect(() => {
+    const sessionId = searchParams.get('session')
+    if (sessionId && !examState) {
+      loadSessionForReview(parseInt(sessionId))
+    }
+  }, [searchParams])
+
+  const loadSessionForReview = async (sessionId: number) => {
+    setLoadingSession(true)
+    setConfigOpen(false)
+
+    try {
+      const { session, results } = await getSession(sessionId)
+
+      // Fetch full question details for each result
+      const questionsWithDetails = await Promise.all(
+        results.map(async (result) => {
+          const question = await getQuestion(result.question_id)
+          return {
+            question,
+            userAnswer: result.user_answer.split(', ').filter(a => a),
+            isCorrect: result.is_correct,
+          }
+        })
+      )
+
+      // Reconstruct answers map
+      const answers: Record<string, string[]> = {}
+      questionsWithDetails.forEach((item) => {
+        answers[item.question.id] = item.userAnswer
+      })
+
+      // Create exam results
+      const examResults: ExamResults = {
+        total: session.total_questions,
+        correct: session.correct,
+        percentage: session.percentage,
+        questions: questionsWithDetails,
+      }
+
+      // Set exam state in submitted mode for review
+      setExamState({
+        questions: questionsWithDetails.map(item => item.question),
+        currentIndex: 0,
+        answers,
+        submitted: true,
+        results: examResults,
+      })
+    } catch (error) {
+      console.error('Failed to load session:', error)
+      // On error, show config dialog
+      setConfigOpen(true)
+    } finally {
+      setLoadingSession(false)
+    }
+  }
 
   const startExam = async (config: ExamConfig) => {
     const questions = await getQuestions({
@@ -70,27 +130,27 @@ export function Exam() {
   const submitExam = async () => {
     if (!examState) return
 
+    const questionResults = examState.questions.map((question) => {
+      const userAnswer = examState.answers[question.id] || []
+      const isCorrect =
+        userAnswer.length === question.correct_answers.length &&
+        userAnswer.every((a) => question.correct_answers.includes(a))
+
+      return {
+        question,
+        userAnswer,
+        isCorrect,
+      }
+    })
+
+    const correct = questionResults.filter((r) => r.isCorrect).length
+
     const results: ExamResults = {
       total: examState.questions.length,
-      correct: 0,
-      percentage: 0,
-      questions: examState.questions.map((question) => {
-        const userAnswer = examState.answers[question.id] || []
-        const isCorrect =
-          userAnswer.length === question.correct_answers.length &&
-          userAnswer.every((a) => question.correct_answers.includes(a))
-
-        if (isCorrect) results.correct++
-
-        return {
-          question,
-          userAnswer,
-          isCorrect,
-        }
-      }),
+      correct,
+      percentage: (correct / examState.questions.length) * 100,
+      questions: questionResults,
     }
-
-    results.percentage = (results.correct / results.total) * 100
 
     // Save session to backend
     await saveSessionMutation.mutateAsync({
@@ -120,6 +180,15 @@ export function Exam() {
 
   const closeReview = () => {
     setReviewIndex(null)
+  }
+
+  // Show loading state when loading a session
+  if (loadingSession) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-muted-foreground">Loading exam session...</div>
+      </div>
+    )
   }
 
   // Show config dialog when no exam in progress

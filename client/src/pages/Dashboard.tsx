@@ -207,7 +207,7 @@ export function Dashboard() {
 
       <SessionHistoryList
         sessions={recentSessions}
-        onSessionClick={(session) => navigate(`/progress?session=${session.id}`)}
+        onSessionClick={(session) => navigate(`/exam?session=${session.id}`)}
       />
     </div>
   )

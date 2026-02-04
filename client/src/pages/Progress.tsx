@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
+import { useNavigate } from 'react-router-dom'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress as ProgressBar } from '@/components/ui/progress'
 import { TopicMasteryTable } from '@/components/TopicMasteryTable'
@@ -7,6 +8,7 @@ import { getProgress, getSessions } from '@/lib/api'
 import { Target, TrendingUp, Award, BookOpen } from 'lucide-react'
 
 export function Progress() {
+  const navigate = useNavigate()
   const { data: progress, isLoading: progressLoading } = useQuery({
     queryKey: ['progress'],
     queryFn: getProgress,
@@ -132,7 +134,10 @@ export function Progress() {
 
       <div className="grid gap-6 lg:grid-cols-2">
         <TopicMasteryTable topics={progress?.topics || []} />
-        <SessionHistoryList sessions={sessions} />
+        <SessionHistoryList
+          sessions={sessions}
+          onSessionClick={(session) => navigate(`/exam?session=${session.id}`)}
+        />
       </div>
     </div>
   )
