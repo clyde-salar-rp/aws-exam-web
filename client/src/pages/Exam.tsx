@@ -182,6 +182,19 @@ export function Exam() {
     setReviewIndex(null)
   }
 
+  const restartExam = () => {
+    if (!examState) return
+
+    // Restart with the same questions, clearing answers
+    setExamState({
+      questions: examState.questions,
+      currentIndex: 0,
+      answers: {},
+      submitted: false,
+    })
+    setReviewIndex(null)
+  }
+
   // Show loading state when loading a session
   if (loadingSession) {
     return (
@@ -265,10 +278,7 @@ export function Exam() {
     return (
       <ResultsSummary
         results={examState.results}
-        onRestart={() => {
-          setExamState(null)
-          setConfigOpen(true)
-        }}
+        onRestart={restartExam}
         onHome={() => navigate('/')}
         onReviewQuestion={handleReviewQuestion}
       />
