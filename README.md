@@ -86,6 +86,10 @@ aws-exam-web/
 | `npm run dev:client` | Start only the frontend |
 | `npm run dev:server` | Start only the backend |
 
+## Credits
+
+Study materials and questions are based on [AWS Certified Cloud Practitioner Notes](https://github.com/kananinirav/AWS-Certified-Cloud-Practitioner-Notes) by kananinirav.
+
 ## License
 
 MIT
