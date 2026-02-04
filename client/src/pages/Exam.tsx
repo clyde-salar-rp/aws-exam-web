@@ -215,9 +215,9 @@ export function Exam() {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <div>
-          <h2 className="text-xl font-bold">
+          <h2 className="text-lg sm:text-xl font-bold">
             Question {examState.currentIndex + 1} of {examState.questions.length}
           </h2>
           <p className="text-sm text-muted-foreground">
@@ -228,6 +228,7 @@ export function Exam() {
           variant="destructive"
           onClick={submitExam}
           disabled={answeredCount === 0}
+          className="w-full sm:w-auto"
         >
           <Flag className="mr-2 h-4 w-4" />
           Submit Exam
@@ -236,12 +237,12 @@ export function Exam() {
 
       <Progress value={progressPercent} className="h-2" />
 
-      <div className="flex gap-1 flex-wrap mb-4">
+      <div className="flex gap-1.5 sm:gap-1 flex-wrap mb-4">
         {examState.questions.map((q, i) => (
           <button
             key={q.id}
             onClick={() => goToQuestion(i)}
-            className={`w-8 h-8 text-xs rounded ${
+            className={`w-10 h-10 sm:w-8 sm:h-8 text-sm sm:text-xs rounded font-medium ${
               i === examState.currentIndex
                 ? 'bg-primary text-primary-foreground'
                 : examState.answers[q.id]

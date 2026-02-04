@@ -105,26 +105,26 @@ export function Progress() {
           <CardTitle>Topic Mastery Overview</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-5 gap-4 text-center">
-            <div className="p-4 bg-green-50 rounded-lg">
-              <div className="text-2xl font-bold text-green-600">{masteredCount}</div>
-              <div className="text-sm text-green-700">Mastered</div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 sm:gap-4 text-center">
+            <div className="p-3 sm:p-4 bg-green-50 rounded-lg">
+              <div className="text-xl sm:text-2xl font-bold text-green-600">{masteredCount}</div>
+              <div className="text-xs sm:text-sm text-green-700">Mastered</div>
             </div>
-            <div className="p-4 bg-blue-50 rounded-lg">
-              <div className="text-2xl font-bold text-blue-600">{proficientCount}</div>
-              <div className="text-sm text-blue-700">Proficient</div>
+            <div className="p-3 sm:p-4 bg-blue-50 rounded-lg">
+              <div className="text-xl sm:text-2xl font-bold text-blue-600">{proficientCount}</div>
+              <div className="text-xs sm:text-sm text-blue-700">Proficient</div>
             </div>
-            <div className="p-4 bg-yellow-50 rounded-lg">
-              <div className="text-2xl font-bold text-yellow-600">{learningCount}</div>
-              <div className="text-sm text-yellow-700">Learning</div>
+            <div className="p-3 sm:p-4 bg-yellow-50 rounded-lg">
+              <div className="text-xl sm:text-2xl font-bold text-yellow-600">{learningCount}</div>
+              <div className="text-xs sm:text-sm text-yellow-700">Learning</div>
             </div>
-            <div className="p-4 bg-orange-50 rounded-lg">
-              <div className="text-2xl font-bold text-orange-600">{needsWorkCount}</div>
-              <div className="text-sm text-orange-700">Needs Work</div>
+            <div className="p-3 sm:p-4 bg-orange-50 rounded-lg">
+              <div className="text-xl sm:text-2xl font-bold text-orange-600">{needsWorkCount}</div>
+              <div className="text-xs sm:text-sm text-orange-700">Needs Work</div>
             </div>
-            <div className="p-4 bg-gray-50 rounded-lg">
-              <div className="text-2xl font-bold text-gray-600">{notStartedCount}</div>
-              <div className="text-sm text-gray-700">Not Started</div>
+            <div className="p-3 sm:p-4 bg-gray-50 rounded-lg col-span-2 sm:col-span-1">
+              <div className="text-xl sm:text-2xl font-bold text-gray-600">{notStartedCount}</div>
+              <div className="text-xs sm:text-sm text-gray-700">Not Started</div>
             </div>
           </div>
         </CardContent>

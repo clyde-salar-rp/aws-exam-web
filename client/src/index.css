@@ -61,13 +61,26 @@
 /* Study content styles */
 
 /* Offset scroll position for sticky header when navigating to anchors */
+/* Mobile: account for mobile header (3.5rem) + sticky content header (~3.5rem) = ~7rem */
+/* Desktop: just the sticky content header (~5rem) */
 .study-content h1,
 .study-content h2,
 .study-content h3,
 .study-content h4,
 .study-content h5,
 .study-content h6 {
-  scroll-margin-top: 5rem;
+  scroll-margin-top: 8rem;
+}
+
+@media (min-width: 768px) {
+  .study-content h1,
+  .study-content h2,
+  .study-content h3,
+  .study-content h4,
+  .study-content h5,
+  .study-content h6 {
+    scroll-margin-top: 5rem;
+  }
 }
 
 .study-content h2 {

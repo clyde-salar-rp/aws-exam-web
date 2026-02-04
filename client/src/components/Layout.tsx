@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { cn } from '@/lib/utils'
-import { Home, BookOpen, BarChart2, FileText, GraduationCap, Menu } from 'lucide-react'
+import { Home, BookOpen, BarChart2, FileText, GraduationCap, Menu, X } from 'lucide-react'
 
 interface LayoutProps {
   children: React.ReactNode
@@ -18,31 +18,89 @@ const navItems = [
 export function Layout({ children }: LayoutProps) {
   const location = useLocation()
   const [collapsed, setCollapsed] = useState(false)
+  const [mobileOpen, setMobileOpen] = useState(false)
+
+  // Close mobile menu when route changes
+  useEffect(() => {
+    setMobileOpen(false)
+  }, [location.pathname])
+
+  // Close mobile menu on escape key
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMobileOpen(false)
+    }
+    document.addEventListener('keydown', handleEscape)
+    return () => document.removeEventListener('keydown', handleEscape)
+  }, [])
 
   return (
     <div className="min-h-screen bg-background flex">
+      {/* Mobile header */}
+      <header className="fixed top-0 left-0 right-0 z-40 h-14 border-b bg-background flex items-center px-4 md:hidden">
+        <button
+          onClick={() => setMobileOpen(true)}
+          className="p-2 rounded-md hover:bg-muted transition-colors"
+          aria-label="Open menu"
+        >
+          <Menu className="h-5 w-5" />
+        </button>
+        <Link to="/" className="flex items-center space-x-2 ml-2">
+          <GraduationCap className="h-6 w-6 shrink-0" />
+          <span className="font-bold">AWS Exam Prep</span>
+        </Link>
+      </header>
+
+      {/* Mobile overlay */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
       <aside
         className={cn(
           'fixed left-0 top-0 z-50 h-screen border-r bg-background flex flex-col transition-all duration-300',
-          collapsed ? 'w-16' : 'w-64'
+          // Desktop: show based on collapsed state
+          'hidden md:flex',
+          collapsed ? 'md:w-16' : 'md:w-64',
+          // Mobile: slide-out drawer
+          mobileOpen && 'flex w-64 translate-x-0',
+          !mobileOpen && 'md:translate-x-0'
         )}
       >
         <div className="p-4 border-b flex items-center justify-between">
+          {/* Mobile close button */}
+          <button
+            onClick={() => setMobileOpen(false)}
+            className="p-2 rounded-md hover:bg-muted transition-colors md:hidden"
+            aria-label="Close menu"
+          >
+            <X className="h-5 w-5" />
+          </button>
           {!collapsed && (
-            <Link to="/" className="flex items-center space-x-2">
+            <Link to="/" className="hidden md:flex items-center space-x-2">
               <GraduationCap className="h-6 w-6 shrink-0" />
               <span className="font-bold">AWS Exam Prep</span>
             </Link>
           )}
+          {/* Desktop collapse button */}
           <button
             onClick={() => setCollapsed(!collapsed)}
             className={cn(
-              'p-2 rounded-md hover:bg-muted transition-colors',
+              'p-2 rounded-md hover:bg-muted transition-colors hidden md:block',
               collapsed && 'mx-auto'
             )}
           >
             <Menu className="h-5 w-5" />
           </button>
+          {/* Mobile title */}
+          <Link to="/" className="flex md:hidden items-center space-x-2">
+            <GraduationCap className="h-6 w-6 shrink-0" />
+            <span className="font-bold">AWS Exam Prep</span>
+          </Link>
         </div>
         <nav className="flex-1 p-2 space-y-1">
           {navItems.map((item) => {
@@ -58,20 +116,25 @@ export function Layout({ children }: LayoutProps) {
                   isActive
                     ? 'bg-primary text-primary-foreground'
                     : 'text-foreground/60 hover:text-foreground hover:bg-muted',
-                  collapsed && 'justify-center px-2'
+                  collapsed && 'md:justify-center md:px-2'
                 )}
               >
                 <Icon className="h-4 w-4 shrink-0" />
-                {!collapsed && <span>{item.label}</span>}
+                <span className={cn(collapsed && 'md:hidden')}>{item.label}</span>
               </Link>
             )
           })}
         </nav>
       </aside>
+
+      {/* Main content */}
       <main
         className={cn(
-          'flex-1 p-6 transition-all duration-300',
-          collapsed ? 'ml-16' : 'ml-64'
+          'flex-1 p-4 md:p-6 transition-all duration-300',
+          // Mobile: full width with top padding for header
+          'pt-20 md:pt-6',
+          // Desktop: margin for sidebar
+          collapsed ? 'md:ml-16' : 'md:ml-64'
         )}
       >
         {children}

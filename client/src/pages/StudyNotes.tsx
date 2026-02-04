@@ -81,7 +81,7 @@ export function StudyNotes() {
               {criticalTopics.map((topic) => (
                 <div
                   key={topic.subtopic}
-                  className="flex justify-between items-center p-3 bg-white rounded-lg border border-red-200"
+                  className="flex flex-col sm:flex-row justify-between sm:items-center gap-2 p-3 bg-white rounded-lg border border-red-200"
                 >
                   <div>
                     <h4 className="font-medium">{topic.display_name}</h4>
@@ -116,7 +116,7 @@ export function StudyNotes() {
               {needsWorkTopics.map((topic) => (
                 <div
                   key={topic.subtopic}
-                  className="flex justify-between items-center p-3 bg-white rounded-lg border border-orange-200"
+                  className="flex flex-col sm:flex-row justify-between sm:items-center gap-2 p-3 bg-white rounded-lg border border-orange-200"
                 >
                   <div>
                     <h4 className="font-medium">{topic.display_name}</h4>
@@ -151,7 +151,7 @@ export function StudyNotes() {
               {learningTopics.map((topic) => (
                 <div
                   key={topic.subtopic}
-                  className="flex justify-between items-center p-3 bg-white rounded-lg border border-yellow-200"
+                  className="flex flex-col sm:flex-row justify-between sm:items-center gap-2 p-3 bg-white rounded-lg border border-yellow-200"
                 >
                   <div>
                     <h4 className="font-medium">{topic.display_name}</h4>
@@ -186,7 +186,7 @@ export function StudyNotes() {
               {strongTopics.map((topic) => (
                 <div
                   key={topic.subtopic}
-                  className="flex justify-between items-center p-3 bg-white rounded-lg border border-green-200"
+                  className="flex flex-col sm:flex-row justify-between sm:items-center gap-2 p-3 bg-white rounded-lg border border-green-200"
                 >
                   <div>
                     <h4 className="font-medium">{topic.display_name}</h4>

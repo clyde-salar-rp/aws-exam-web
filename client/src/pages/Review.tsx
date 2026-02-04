@@ -81,15 +81,15 @@ export function Review() {
     return (
       <div className="min-h-screen">
         {/* Sticky header */}
-        <div className="sticky top-0 z-10 bg-background/95 backdrop-blur border-b mb-8">
-          <div className="flex items-center gap-4 py-4">
+        <div className="sticky top-14 md:top-0 z-10 bg-background/95 backdrop-blur border-b mb-6 md:mb-8">
+          <div className="flex items-center gap-3 md:gap-4 py-3 md:py-4">
             <Button variant="outline" size="sm" onClick={() => setSelectedSection(null)}>
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back
+              <ArrowLeft className="mr-1 md:mr-2 h-4 w-4" />
+              <span className="hidden sm:inline">Back</span>
             </Button>
-            <div>
-              <h1 className="text-xl font-bold">{sectionContent.display_name}</h1>
-              <p className="text-sm text-muted-foreground">Study Material</p>
+            <div className="min-w-0 flex-1">
+              <h1 className="text-lg md:text-xl font-bold truncate">{sectionContent.display_name}</h1>
+              <p className="text-xs md:text-sm text-muted-foreground">Study Material</p>
             </div>
           </div>
         </div>
@@ -102,7 +102,7 @@ export function Review() {
             </div>
           ) : (
             <Card className="max-w-5xl">
-              <CardContent className="p-8 lg:p-12">
+              <CardContent className="p-4 sm:p-6 md:p-8 lg:p-12">
                 <article
                   className="study-content prose prose-slate lg:prose-lg max-w-none dark:prose-invert"
                   dangerouslySetInnerHTML={{ __html: sectionContent.content || '' }}

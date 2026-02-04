@@ -28,7 +28,7 @@ export function ResultsSummary({
         <CardContent className="space-y-6">
           <div className="text-center">
             <div
-              className={`text-6xl font-bold ${
+              className={`text-5xl sm:text-6xl font-bold ${
                 isPassing ? 'text-green-600' : 'text-red-600'
               }`}
             >
@@ -37,7 +37,7 @@ export function ResultsSummary({
             <p className="text-muted-foreground mt-2">
               {results.correct} of {results.total} correct
             </p>
-            <div className={`mt-4 text-lg font-medium ${
+            <div className={`mt-4 text-base sm:text-lg font-medium ${
               isPassing ? 'text-green-600' : 'text-red-600'
             }`}>
               {isPassing ? 'PASSED' : 'NEEDS MORE PRACTICE'}
@@ -61,7 +61,7 @@ export function ResultsSummary({
             </div>
           </div>
 
-          <div className="flex gap-4">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
             <Button onClick={onRestart} className="flex-1">
               <RotateCcw className="mr-2 h-4 w-4" />
               Try Again
@@ -84,7 +84,7 @@ export function ResultsSummary({
               <button
                 key={index}
                 onClick={() => onReviewQuestion(index)}
-                className={`p-2 rounded text-sm font-medium transition-colors ${
+                className={`p-3 sm:p-2 rounded text-sm font-medium transition-colors ${
                   result.isCorrect
                     ? 'bg-green-100 text-green-700 hover:bg-green-200'
                     : 'bg-red-100 text-red-700 hover:bg-red-200'
