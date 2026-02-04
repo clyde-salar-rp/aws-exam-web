@@ -1,0 +1,123 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 210 40% 98%;
+    --foreground: 217 33% 17%;
+    --card: 0 0% 100%;
+    --card-foreground: 217 33% 17%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 217 33% 17%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 214 32% 91%;
+    --secondary-foreground: 217 33% 17%;
+    --muted: 214 32% 91%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 214 32% 91%;
+    --accent-foreground: 217 33% 17%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 214 32% 85%;
+    --input: 214 32% 85%;
+    --ring: 217 91% 60%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 217 33% 10%;
+    --foreground: 210 40% 98%;
+    --card: 217 33% 14%;
+    --card-foreground: 210 40% 98%;
+    --popover: 217 33% 14%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 217 33% 20%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217 33% 20%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 217 33% 20%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217 33% 20%;
+    --input: 217 33% 20%;
+    --ring: 217 91% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Study content styles */
+.study-content h2 {
+  @apply text-2xl font-bold mt-12 mb-6 pb-3 border-b-2 border-primary/20 text-primary;
+}
+
+.study-content h3 {
+  @apply text-xl font-semibold mt-8 mb-4 text-foreground/90;
+}
+
+.study-content h4 {
+  @apply text-lg font-semibold mt-6 mb-3;
+}
+
+.study-content p {
+  @apply leading-relaxed mb-4 text-foreground/80;
+}
+
+.study-content ul,
+.study-content ol {
+  @apply my-4 ml-6 space-y-2;
+}
+
+.study-content li {
+  @apply leading-relaxed;
+}
+
+.study-content strong {
+  @apply font-semibold text-foreground;
+}
+
+.study-content table {
+  @apply w-full my-6 border-collapse rounded-lg overflow-hidden shadow-sm;
+}
+
+.study-content th {
+  @apply bg-primary/10 px-4 py-3 text-left font-semibold border border-border;
+}
+
+.study-content td {
+  @apply px-4 py-3 border border-border;
+}
+
+.study-content tr:nth-child(even) {
+  @apply bg-muted/30;
+}
+
+.study-content section,
+.study-content > div {
+  @apply mb-8;
+}
+
+/* Info boxes / callouts */
+.study-content blockquote {
+  @apply border-l-4 border-primary bg-primary/5 px-6 py-4 my-6 rounded-r-lg;
+}
+
+.study-content code {
+  @apply bg-muted px-1.5 py-0.5 rounded text-sm font-mono;
+}
+
+.study-content pre {
+  @apply bg-muted p-4 rounded-lg overflow-x-auto my-6 border;
+}
