@@ -57,7 +57,7 @@ export function ExamConfigDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[500px] max-h-[90vh] flex flex-col">
         <DialogHeader>
           <DialogTitle>Configure Your Exam</DialogTitle>
           <DialogDescription>
@@ -65,22 +65,22 @@ export function ExamConfigDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-6 py-4">
+        <div className="space-y-4 sm:space-y-6 py-4 overflow-y-auto flex-1 -mx-6 px-6">
           <div className="space-y-3">
             <Label>Exam Mode</Label>
             <RadioGroup value={mode} onValueChange={(v) => setMode(v as ExamMode)}>
               {examModes.map((m) => (
                 <div
                   key={m.value}
-                  className="flex items-start space-x-3 p-3 rounded-lg border hover:bg-muted cursor-pointer"
+                  className="flex items-start space-x-3 p-2 sm:p-3 rounded-lg border hover:bg-muted cursor-pointer"
                   onClick={() => setMode(m.value)}
                 >
-                  <RadioGroupItem value={m.value} id={m.value} />
+                  <RadioGroupItem value={m.value} id={m.value} className="mt-0.5" />
                   <div className="flex-1">
-                    <Label htmlFor={m.value} className="cursor-pointer font-medium">
+                    <Label htmlFor={m.value} className="cursor-pointer font-medium text-sm sm:text-base">
                       {m.label}
                     </Label>
-                    <p className="text-sm text-muted-foreground">{m.description}</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground">{m.description}</p>
                   </div>
                 </div>
               ))}
