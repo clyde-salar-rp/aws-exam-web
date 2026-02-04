@@ -171,4 +171,4 @@ AWS follows three fundamental pricing principles based on the pay-as-you-go pric
 - AWS handles security *of* the cloud, while customers manage security *in* the cloud.
 - Understanding your responsibilities helps you implement appropriate security measures for your AWS environment.
 
-![Shared Responsibility Model](../images/Shared_Responsibility_Model.jpg)
+![Shared Responsibility Model](/images/Shared_Responsibility_Model.jpg)

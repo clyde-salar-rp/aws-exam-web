@@ -132,3 +132,7 @@
 .study-content pre {
   @apply bg-muted p-4 rounded-lg overflow-x-auto my-6 border;
 }
+
+.study-content img {
+  @apply my-6 rounded-lg shadow-md max-w-full h-auto mx-auto;
+}

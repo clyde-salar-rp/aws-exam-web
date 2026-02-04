@@ -173,7 +173,7 @@
 - Implement human approval feature
 - Use cases: order fulfillment, data processing, web applications, any workflow
 
-<img src="../images/step_functions.png" height="300" width="300">
+<img src="/images/step_functions.png" height="300" width="300">
 
 ## AWS Ground Station
 
@@ -197,4 +197,4 @@
 
 * * *
 
-[<img align="center" src="../images/back-arrow.png" height="20" width="20"/> Advanced Identity](./advanced_identity.md)&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;[<img align="center" src="../images/list[...]
+[<img align="center" src="/images/back-arrow.png" height="20" width="20"/> Advanced Identity](./advanced_identity.md)&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;[<img align="center" src="/images/list[...]

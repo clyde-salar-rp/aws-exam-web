@@ -8,10 +8,6 @@ import { getSections, getSection, getTopicProgress } from '@/lib/api'
 import type { Section } from '@/types'
 import { ArrowLeft, BookOpen } from 'lucide-react'
 
-function removeImageTags(html: string): string {
-  return html.replace(/<img[^>]*>/gi, '')
-}
-
 export function Review() {
   const [selectedSection, setSelectedSection] = useState<string | null>(null)
   const contentRef = useRef<HTMLDivElement>(null)
@@ -109,7 +105,7 @@ export function Review() {
               <CardContent className="p-8 lg:p-12">
                 <article
                   className="study-content prose prose-slate lg:prose-lg max-w-none dark:prose-invert"
-                  dangerouslySetInnerHTML={{ __html: removeImageTags(sectionContent.content || '') }}
+                  dangerouslySetInnerHTML={{ __html: sectionContent.content || '' }}
                 />
               </CardContent>
             </Card>

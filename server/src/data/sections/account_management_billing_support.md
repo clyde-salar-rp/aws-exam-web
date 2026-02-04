@@ -105,7 +105,7 @@
 - Includes: virtual machines, databases, storage options, etc…
 - Enter AWS Service Catalog!
 
-<img src="../images/service_catalog.png" height="230" width="350">
+<img src="/images/service_catalog.png" height="230" width="350">
 
 ## Pricing Models in AWS
 

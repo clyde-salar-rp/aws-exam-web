@@ -39,7 +39,7 @@
 - Volumes can be attached to one EC2 instance at a time but can be detached and re-attached.
 - Use case: preserve root volume when instance is terminated
 
-![Elastic File System](../images/EBS.png)
+![Elastic File System](/images/EBS.png)
 
 ### EBS – Delete on Termination Attribute
 
@@ -71,7 +71,7 @@
 - Can scale automatically as data grows.
 - Accessible from multiple AZs, providing high availability and durability.
 
-![Elastic File System](../images/EFS.png)
+![Elastic File System](/images/EFS.png)
 
 ## EFS Infrequent Access (EFS-IA)
 

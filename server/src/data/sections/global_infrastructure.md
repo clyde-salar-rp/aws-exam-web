@@ -69,7 +69,7 @@
 
 ### Route 53 - Diagram for A Record
 
-![Route 53](./images/../../images/Route_53.png)
+![Route 53](./images/..//images/Route_53.png)
 
 <!--
 ```mermaid

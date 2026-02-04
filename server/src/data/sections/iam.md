@@ -56,7 +56,7 @@
 
 ### IAM Policies Inheritance
 
-![IAM Policies Inheritance](../images/IAM_Policies_inheritance.png)
+![IAM Policies Inheritance](/images/IAM_Policies_inheritance.png)
 
 - Policies are evaluated together for a user, including:
   - **Directly attached policies**.

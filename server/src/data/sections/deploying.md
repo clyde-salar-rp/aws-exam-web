@@ -117,7 +117,7 @@ app.synth()
 
 ## Typical architecture: Web App 3-tier
 
-![Web App 3-tier](../images/web_architecture.png)
+![Web App 3-tier](/images/web_architecture.png)
 
 ## AWS Elastic Beanstalk Overview
 
@@ -278,7 +278,7 @@ AWS Elastic Beanstalk uses AWS CloudFormation underneath for managing the infras
 
 ### OpsWorks Architecture
 
-![OpsWorks Architecture](../images/OpsWorks_Architecture.png)
+![OpsWorks Architecture](/images/OpsWorks_Architecture.png)
 
 ## Deployment - Summary
 

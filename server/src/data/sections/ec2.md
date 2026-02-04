@@ -171,7 +171,7 @@ t2.micro is part of the AWS free tier (up to 750 hours per month)
 
 ### Security Groups Diagram
 
-![Security Groups Diagram](../images/Security_Groups_Diagram.png)
+![Security Groups Diagram](/images/Security_Groups_Diagram.png)
 
 ### Examples of Security Group Rules
 

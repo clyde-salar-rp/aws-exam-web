@@ -80,9 +80,9 @@
   - Monitoring and auditing access using AWS CloudTrail and S3 access logs.
   - Implementing versioning and lifecycle policies for object management.
 
-<img src="../images/Shared_Responsibility_Model.jpg">
+<img src="/images/Shared_Responsibility_Model.jpg">
 
-<img src="../images/shared_responsibility_model_2.png">
+<img src="/images/shared_responsibility_model_2.png">
 
 ## DDOS Protection on AWS
 
@@ -345,7 +345,7 @@
 - Define Zone of Trust = AWS Account or AWS Organization.
 - Access outside zone of trusts => findings
 
-<img src="../images/IAM_Access_Analyzer.png" height="350" width="300">
+<img src="/images/IAM_Access_Analyzer.png" height="350" width="300">
 
 ## Summary
 
