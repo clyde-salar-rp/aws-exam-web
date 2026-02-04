@@ -1,14 +1,12 @@
-# AWS Exam Prep
+# AWS Cloud Practitioner Exam Prep
 
-A web application for practicing AWS certification exam questions with progress tracking and study materials.
+A web application for practicing AWS Cloud Practitioner (CLF-C02) certification exam questions with progress tracking and study materials.
 
 ## Features
 
 - Practice exams with multiple modes (adaptive, random, weak topics, missed questions, new questions)
 - Progress tracking and topic mastery display
-- Study materials for each AWS topic
-- Collapsible sidebar navigation
-- Blue-themed modern UI
+- Study materials for each AWS Cloud Practitioner topic
 
 ## Prerequisites
 
