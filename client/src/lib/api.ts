@@ -8,6 +8,7 @@ import type {
   ExamMode
 } from '@/types'
 import { getApiErrorMessage } from './errorHandler'
+import { config } from '@/config'
 
 const API_BASE = '/api'
 
@@ -123,4 +124,81 @@ export async function getProgress(): Promise<ProgressSummary> {
 
 export async function getTopicProgress(): Promise<TopicStats[]> {
   return fetchAPI<TopicStats[]>('/progress/topics')
+}
+
+// Auth API
+export interface User {
+  userId: string
+  email: string
+  name: string
+  picture: string
+  must_change_password: boolean
+}
+
+export async function getCurrentUser(): Promise<User> {
+  const response = await fetch(`${config.apiUrl}/api/auth/me`, {
+    credentials: 'include',
+  })
+
+  if (!response.ok) {
+    throw new Error('Not authenticated')
+  }
+
+  const data = await response.json()
+  return data.user
+}
+
+export async function loginUser(email: string, password: string): Promise<void> {
+  const response = await fetch(`${config.apiUrl}/api/auth/login`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+    body: JSON.stringify({ email, password }),
+  })
+
+  if (!response.ok) {
+    const data = await response.json()
+    throw new Error(getApiErrorMessage(data))
+  }
+}
+
+export async function registerUser(name: string, email: string, password: string): Promise<void> {
+  const response = await fetch(`${config.apiUrl}/api/auth/register`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+    body: JSON.stringify({ name, email, password }),
+  })
+
+  if (!response.ok) {
+    const data = await response.json()
+    throw new Error(getApiErrorMessage(data))
+  }
+}
+
+export async function logoutUser(): Promise<void> {
+  await fetch(`${config.apiUrl}/api/auth/logout`, {
+    method: 'POST',
+    credentials: 'include',
+  })
+}
+
+export async function changePassword(currentPassword: string, newPassword: string): Promise<void> {
+  const response = await fetch(`${config.apiUrl}/api/auth/change-password`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+    body: JSON.stringify({ currentPassword, newPassword }),
+  })
+
+  if (!response.ok) {
+    const data = await response.json()
+    throw new Error(getApiErrorMessage(data))
+  }
 }

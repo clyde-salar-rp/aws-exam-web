@@ -1,14 +1,6 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { config } from '@/config';
-import { getFriendlyErrorMessage } from '@/lib/errorHandler';
-
-interface User {
-  userId: string;
-  email: string;
-  name: string;
-  picture: string;
-  must_change_password: boolean;
-}
+import { createContext, useContext, ReactNode } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { getCurrentUser, logoutUser, type User } from '@/lib/api';
 
 interface AuthContextType {
   user: User | null;
@@ -20,52 +12,39 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
 
-  const fetchUser = async () => {
-    try {
-      const response = await fetch(`${config.apiUrl}/api/auth/me`, {
-        credentials: 'include',
-      });
+  // Fetch current user with React Query
+  const { data: user = null, isLoading: loading, refetch } = useQuery({
+    queryKey: ['currentUser'],
+    queryFn: getCurrentUser,
+    retry: false, // Don't retry if not authenticated
+    staleTime: 1000 * 60 * 5, // Consider fresh for 5 minutes
+  });
 
-      if (response.ok) {
-        const data = await response.json();
-        setUser(data.user);
-      } else {
-        // User not authenticated or session expired
-        setUser(null);
-      }
-    } catch (error) {
-      // Log user-friendly error for debugging
-      const friendlyError = getFriendlyErrorMessage(error);
-      console.error('Authentication check failed:', friendlyError.message);
-      setUser(null);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Logout mutation
+  const logoutMutation = useMutation({
+    mutationFn: logoutUser,
+    onSuccess: () => {
+      // Clear all cached data
+      queryClient.clear();
+      // Redirect to login
+      window.location.href = '/login';
+    },
+    onError: () => {
+      // Even if logout fails on server, clear local state and redirect
+      queryClient.clear();
+      window.location.href = '/login';
+    },
+  });
 
   const logout = async () => {
-    try {
-      await fetch(`${config.apiUrl}/api/auth/logout`, {
-        method: 'POST',
-        credentials: 'include',
-      });
-      setUser(null);
-      window.location.href = '/login';
-    } catch (error) {
-      // Even if logout fails on server, clear local state and redirect
-      const friendlyError = getFriendlyErrorMessage(error);
-      console.error('Logout request failed:', friendlyError.message);
-      setUser(null);
-      window.location.href = '/login';
-    }
+    await logoutMutation.mutateAsync();
   };
 
-  useEffect(() => {
-    fetchUser();
-  }, []);
+  const refetchUser = async () => {
+    await refetch();
+  };
 
   return (
     <AuthContext.Provider
@@ -73,7 +52,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         user,
         loading,
         logout,
-        refetchUser: fetchUser,
+        refetchUser,
       }}
     >
       {children}

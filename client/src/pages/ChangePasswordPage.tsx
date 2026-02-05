@@ -1,24 +1,40 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { GraduationCap, Loader2, AlertCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { useAuth } from '@/contexts/AuthContext'
-import { config } from '@/config'
-import { getFriendlyErrorMessage, getApiErrorMessage } from '@/lib/errorHandler'
+import { changePassword } from '@/lib/api'
 
 export default function ChangePasswordPage() {
   const navigate = useNavigate()
-  const { refetchUser } = useAuth()
-  const [loading, setLoading] = useState(false)
+  const queryClient = useQueryClient()
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
 
   const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+
+  // Change password mutation
+  const changePasswordMutation = useMutation({
+    mutationFn: ({ current, newPass }: { current: string; newPass: string }) =>
+      changePassword(current, newPass),
+    onSuccess: async () => {
+      setSuccess(true)
+      // Refetch user to update must_change_password flag
+      await queryClient.invalidateQueries({ queryKey: ['currentUser'] })
+      // Redirect to dashboard after 2 seconds
+      setTimeout(() => {
+        navigate('/dashboard')
+      }, 2000)
+    },
+    onError: (err: Error) => {
+      setError(err.message)
+    },
+  })
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -36,41 +52,10 @@ export default function ChangePasswordPage() {
       return
     }
 
-    setLoading(true)
-
-    try {
-      const response = await fetch(`${config.apiUrl}/api/auth/change-password`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ currentPassword, newPassword }),
-      })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        // Use user-friendly error message from API
-        setError(getApiErrorMessage(data))
-        return
-      }
-
-      setSuccess(true)
-
-      // Refetch user to update must_change_password flag
-      await refetchUser()
-
-      // Redirect to dashboard after 2 seconds
-      setTimeout(() => {
-        navigate('/dashboard')
-      }, 2000)
-    } catch (err) {
-      // Handle network errors and other unexpected errors
-      const friendlyError = getFriendlyErrorMessage(err)
-      setError(friendlyError.message)
-    } finally {
-      setLoading(false)
-    }
+    changePasswordMutation.mutate({ current: currentPassword, newPass: newPassword })
   }
+
+  const loading = changePasswordMutation.isPending
 
   return (
     <div className="flex min-h-screen items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
