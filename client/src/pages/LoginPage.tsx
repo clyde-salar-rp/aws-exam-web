@@ -1,19 +1,18 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { GraduationCap, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { useAuth } from '@/contexts/AuthContext'
+import { loginUser, registerUser } from '@/lib/api'
 import { config } from '@/config'
-import { getFriendlyErrorMessage, getApiErrorMessage } from '@/lib/errorHandler'
 
 export default function LoginPage() {
   const navigate = useNavigate()
-  const { refetchUser } = useAuth()
-  const [loading, setLoading] = useState(false)
+  const queryClient = useQueryClient()
   const [error, setError] = useState('')
 
   // Login form state
@@ -30,39 +29,38 @@ export default function LoginPage() {
     window.location.href = `${config.apiUrl}/api/auth/google`
   }
 
+  // Login mutation
+  const loginMutation = useMutation({
+    mutationFn: ({ email, password }: { email: string; password: string }) =>
+      loginUser(email, password),
+    onSuccess: async () => {
+      // Invalidate current user to refetch
+      await queryClient.invalidateQueries({ queryKey: ['currentUser'] })
+      navigate('/dashboard')
+    },
+    onError: (err: Error) => {
+      setError(err.message)
+    },
+  })
+
+  // Register mutation
+  const registerMutation = useMutation({
+    mutationFn: ({ name, email, password }: { name: string; email: string; password: string }) =>
+      registerUser(name, email, password),
+    onSuccess: async () => {
+      // Invalidate current user to refetch
+      await queryClient.invalidateQueries({ queryKey: ['currentUser'] })
+      navigate('/dashboard')
+    },
+    onError: (err: Error) => {
+      setError(err.message)
+    },
+  })
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
-    setLoading(true)
-
-    try {
-      const response = await fetch(`${config.apiUrl}/api/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ email: loginEmail, password: loginPassword }),
-      })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        // Use user-friendly error message from API
-        setError(getApiErrorMessage(data))
-        return
-      }
-
-      // Refetch user data to update auth context
-      await refetchUser()
-
-      // Redirect to dashboard on success
-      navigate('/dashboard')
-    } catch (err) {
-      // Handle network errors and other unexpected errors
-      const friendlyError = getFriendlyErrorMessage(err)
-      setError(friendlyError.message)
-    } finally {
-      setLoading(false)
-    }
+    loginMutation.mutate({ email: loginEmail, password: loginPassword })
   }
 
   const handleRegister = async (e: React.FormEvent) => {
@@ -75,41 +73,14 @@ export default function LoginPage() {
       return
     }
 
-    setLoading(true)
-
-    try {
-      const response = await fetch(`${config.apiUrl}/api/auth/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({
-          name: registerName,
-          email: registerEmail,
-          password: registerPassword,
-        }),
-      })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        // Use user-friendly error message from API
-        setError(getApiErrorMessage(data))
-        return
-      }
-
-      // Refetch user data to update auth context
-      await refetchUser()
-
-      // Redirect to dashboard on success
-      navigate('/dashboard')
-    } catch (err) {
-      // Handle network errors and other unexpected errors
-      const friendlyError = getFriendlyErrorMessage(err)
-      setError(friendlyError.message)
-    } finally {
-      setLoading(false)
-    }
+    registerMutation.mutate({
+      name: registerName,
+      email: registerEmail,
+      password: registerPassword,
+    })
   }
+
+  const loading = loginMutation.isPending || registerMutation.isPending
 
   return (
     <div className="flex min-h-screen items-center justify-center py-12 px-4 sm:px-6 lg:px-8">

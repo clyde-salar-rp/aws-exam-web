@@ -7,9 +7,8 @@ import { QuestionCard } from '@/components/QuestionCard'
 import { ExamConfigDialog } from '@/components/ExamConfigDialog'
 import { ResultsSummary } from '@/components/ResultsSummary'
 import { getQuestions, getTopicProgress, saveSession, getSession, getQuestion } from '@/lib/api'
-import type { ExamConfig, ExamResults, ExamState, Question } from '@/types'
+import type { ExamConfig, ExamResults, ExamState } from '@/types'
 import { ChevronLeft, ChevronRight, Flag, AlertCircle } from 'lucide-react'
-import { getFriendlyErrorMessage } from '@/lib/errorHandler'
 
 export function Exam() {
   const navigate = useNavigate()
@@ -18,8 +17,8 @@ export function Exam() {
   const [configOpen, setConfigOpen] = useState(true)
   const [examState, setExamState] = useState<ExamState | null>(null)
   const [reviewIndex, setReviewIndex] = useState<number | null>(null)
-  const [loadingSession, setLoadingSession] = useState(false)
-  const [sessionError, setSessionError] = useState<string | null>(null)
+
+  const sessionId = searchParams.get('session') ? parseInt(searchParams.get('session')!) : null
 
   const { data: topics = [] } = useQuery({
     queryKey: ['topicProgress'],
@@ -35,20 +34,16 @@ export function Exam() {
     },
   })
 
-  // Load session for review if session ID is in URL
-  useEffect(() => {
-    const sessionId = searchParams.get('session')
-    if (sessionId && !examState) {
-      loadSessionForReview(parseInt(sessionId))
-    }
-  }, [searchParams])
+  // Load session for review using React Query
+  const {
+    data: sessionData,
+    isLoading: loadingSession,
+    error: sessionError,
+  } = useQuery({
+    queryKey: ['session', sessionId],
+    queryFn: async () => {
+      if (!sessionId) return null
 
-  const loadSessionForReview = async (sessionId: number) => {
-    setLoadingSession(true)
-    setConfigOpen(false)
-    setSessionError(null)
-
-    try {
       const { session, results } = await getSession(sessionId)
 
       // Fetch full question details for each result
@@ -57,7 +52,7 @@ export function Exam() {
           const question = await getQuestion(result.question_id)
           return {
             question,
-            userAnswer: result.user_answer.split(', ').filter(a => a),
+            userAnswer: result.user_answer.split(', ').filter((a) => a),
             isCorrect: result.is_correct,
           }
         })
@@ -77,25 +72,36 @@ export function Exam() {
         questions: questionsWithDetails,
       }
 
-      // Set exam state in submitted mode for review
-      setExamState({
-        questions: questionsWithDetails.map(item => item.question),
-        currentIndex: 0,
+      return {
+        questions: questionsWithDetails.map((item) => item.question),
         answers,
+        examResults,
+      }
+    },
+    enabled: !!sessionId && !examState, // Only run if sessionId exists and examState is not set
+    staleTime: Infinity, // Session data doesn't change
+  })
+
+  // Set exam state when session data is loaded
+  useEffect(() => {
+    if (sessionData && !examState) {
+      setExamState({
+        questions: sessionData.questions,
+        currentIndex: 0,
+        answers: sessionData.answers,
         submitted: true,
-        results: examResults,
+        results: sessionData.examResults,
       })
-    } catch (error) {
-      // Show user-friendly error message
-      const friendlyError = getFriendlyErrorMessage(error)
-      setSessionError(friendlyError.message)
-      console.error('Failed to load session:', friendlyError.message)
-      // On error, show config dialog
-      setConfigOpen(true)
-    } finally {
-      setLoadingSession(false)
+      setConfigOpen(false)
     }
-  }
+  }, [sessionData, examState])
+
+  // Handle session error
+  useEffect(() => {
+    if (sessionError && sessionId) {
+      setConfigOpen(true)
+    }
+  }, [sessionError, sessionId])
 
   const startExam = async (config: ExamConfig) => {
     const questions = await getQuestions({
@@ -231,14 +237,8 @@ export function Exam() {
             <AlertCircle className="h-5 w-5 shrink-0" />
             <div>
               <p className="font-medium">Unable to Load Exam Session</p>
-              <p className="mt-1">{sessionError}</p>
+              <p className="mt-1">{sessionError.message}</p>
             </div>
-            <button
-              onClick={() => setSessionError(null)}
-              className="ml-auto text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300"
-            >
-              Dismiss
-            </button>
           </div>
         )}
 
