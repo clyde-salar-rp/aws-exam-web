@@ -1,12 +1,12 @@
 import express, { Request, Response } from 'express';
-import passport from '../auth/passport';
-import { generateToken } from '../auth/jwt';
-import { AuthRequest, requireAuth } from '../auth/middleware';
-import { createLocalUser, getUserByEmail, getUserById, updateUserPassword, incrementFailedLoginAttempts, resetFailedLoginAttempts, lockAccount, isAccountLocked } from '../db/database';
-import { hashPassword, comparePassword, validatePassword, validateEmail } from '../auth/password';
-import logger, { sanitizeError } from '../lib/logger';
-import { authLimiter, passwordChangeLimiter } from '../middleware/rateLimiter';
-import { validateRegistration, validateLogin, validatePasswordChange } from '../middleware/validation';
+import passport from '../auth/passport.js';
+import { generateToken } from '../auth/jwt.js';
+import { AuthRequest, requireAuth } from '../auth/middleware.js';
+import { createLocalUser, getUserByEmail, getUserById, updateUserPassword, incrementFailedLoginAttempts, resetFailedLoginAttempts, lockAccount, isAccountLocked } from '../db/database.js';
+import { hashPassword, comparePassword, validatePassword, validateEmail } from '../auth/password.js';
+import logger, { sanitizeError } from '../lib/logger.js';
+import { authLimiter, passwordChangeLimiter } from '../middleware/rateLimiter.js';
+import { validateRegistration, validateLogin, validatePasswordChange } from '../middleware/validation.js';
 
 const router = express.Router();
 
