@@ -1,0 +1,59 @@
+name: Code Quality Checks
+
+on:
+  push:
+    branches:
+      - main
+      - prod
+  pull_request:
+    branches:
+      - main
+      - prod
+
+jobs:
+  quality-checks:
+    name: Code Quality & Build Verification
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: 🔍 TypeScript - Check Client Types
+        run: npm run typecheck -w client
+
+      - name: 🔍 TypeScript - Check Server Types
+        run: npm run typecheck -w server
+
+      - name: 🎨 ESLint - Lint Client Code
+        run: npm run lint -w client
+
+      - name: 🎨 ESLint - Lint Server Code
+        run: npm run lint -w server
+
+      - name: 🏗️ Build - Compile Server
+        run: npm run build -w server
+
+      - name: 🏗️ Build - Compile Client
+        run: npm run build -w client
+
+      - name: ✅ Verify Build Artifacts
+        run: |
+          if [ ! -d "server/dist" ]; then
+            echo "❌ Server build failed - dist directory not found"
+            exit 1
+          fi
+          if [ ! -d "client/dist" ]; then
+            echo "❌ Client build failed - dist directory not found"
+            exit 1
+          fi
+          echo "✅ All build artifacts verified successfully"
