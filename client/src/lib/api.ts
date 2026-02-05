@@ -35,7 +35,7 @@ async function fetchAPI<T>(endpoint: string, options?: RequestInit): Promise<T> 
       try {
         const errorData = await response.json()
         throw new Error(getApiErrorMessage(errorData))
-      } catch (e) {
+      } catch {
         // If parsing fails, use status-based message
         if (response.status === 403) {
           throw new Error('You do not have permission to access this resource.')

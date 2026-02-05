@@ -142,17 +142,22 @@ export function getFriendlyErrorMessage(error: unknown): FriendlyError {
  * Get a friendly error message from an API response
  * Handles both string errors and error objects from the API
  */
-export function getApiErrorMessage(response: any): string {
-  // If response has an error field, process it
-  if (response?.error) {
-    const friendlyError = getFriendlyErrorMessage(new Error(response.error));
-    return friendlyError.message;
-  }
+export function getApiErrorMessage(response: unknown): string {
+  // Type guard to check if response is an object with error or message
+  if (typeof response === 'object' && response !== null) {
+    const responseObj = response as { error?: string; message?: string };
 
-  // If response has a message field
-  if (response?.message) {
-    const friendlyError = getFriendlyErrorMessage(new Error(response.message));
-    return friendlyError.message;
+    // If response has an error field, process it
+    if (responseObj.error) {
+      const friendlyError = getFriendlyErrorMessage(new Error(responseObj.error));
+      return friendlyError.message;
+    }
+
+    // If response has a message field
+    if (responseObj.message) {
+      const friendlyError = getFriendlyErrorMessage(new Error(responseObj.message));
+      return friendlyError.message;
+    }
   }
 
   // Fallback

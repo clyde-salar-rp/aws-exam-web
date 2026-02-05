@@ -45,10 +45,10 @@ export async function requireAuth(req: AuthRequest, res: Response, next: NextFun
     req.user = payload;
 
     next();
-  } catch (error) {
+  } catch (err) {
     res.status(401).json({
       error: 'Invalid or expired token',
-      message: error instanceof Error ? error.message : 'Authentication failed'
+      message: err instanceof Error ? err.message : 'Authentication failed'
     });
   }
 }
@@ -71,7 +71,7 @@ export function optionalAuth(req: AuthRequest, res: Response, next: NextFunction
     }
 
     next();
-  } catch (error) {
+  } catch {
     // Invalid token - just continue without user
     next();
   }
@@ -107,7 +107,7 @@ export function requireRole(...roles: Array<'user' | 'admin' | 'super_admin'>) {
       }
 
       next();
-    } catch (error) {
+    } catch {
       res.status(500).json({ error: 'Authorization check failed' });
     }
   };

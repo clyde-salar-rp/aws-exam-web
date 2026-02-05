@@ -116,7 +116,7 @@ async function weightedRandomSelection(
     if (remaining.length === 0) break;
 
     const totalWeight = remaining.reduce((sum, item) => sum + item.weight, 0);
-    let r = Math.random() * totalWeight;
+    const r = Math.random() * totalWeight;
     let cumulative = 0;
 
     for (let j = 0; j < remaining.length; j++) {

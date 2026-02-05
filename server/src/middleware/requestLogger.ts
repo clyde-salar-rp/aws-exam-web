@@ -32,10 +32,10 @@ export const requestLogger = (pinoHttp as unknown as typeof pinoHttp.default)({
   autoLogging: {
     ignore: (req: IncomingMessage) => req.url === "/api/health",
   },
-  customSuccessMessage: (req: IncomingMessage, res: ServerResponse) => {
+  customSuccessMessage: (req: IncomingMessage, _res: ServerResponse) => {
     return `${req.method} ${req.url} completed`;
   },
-  customErrorMessage: (req: IncomingMessage, res: ServerResponse, err: Error) => {
+  customErrorMessage: (req: IncomingMessage, _res: ServerResponse, _err: Error) => {
     return `${req.method} ${req.url} failed`;
   },
   customAttributeKeys: {

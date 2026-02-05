@@ -69,8 +69,8 @@ router.get('/google/callback',
 
       // Redirect to dashboard
       res.redirect(`${FRONTEND_URL}/dashboard`);
-    } catch (error) {
-      console.error('OAuth callback error:', error);
+    } catch (err) {
+      console.error('OAuth callback error:', err);
       res.redirect(`${FRONTEND_URL}/login?error=server_error`);
     }
   }
@@ -145,8 +145,8 @@ router.post('/register', authLimiter, validateRegistration, async (req: Request,
         role: user.role,
       },
     });
-  } catch (error) {
-    logger.error(sanitizeError(error), 'Registration error');
+  } catch (err) {
+    logger.error(sanitizeError(err), 'Registration error');
     res.status(500).json({ error: 'Registration failed' });
   }
 });
@@ -239,8 +239,8 @@ router.post('/login', authLimiter, validateLogin, async (req: Request, res: Resp
         role: user.role,
       },
     });
-  } catch (error) {
-    logger.error(sanitizeError(error), 'Login error');
+  } catch (err) {
+    logger.error(sanitizeError(err), 'Login error');
     res.status(500).json({ error: 'Login failed' });
   }
 });
@@ -259,13 +259,14 @@ router.get('/me', requireAuth, async (req: AuthRequest, res: Response) => {
     }
 
     // Return user data without password
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...userWithoutPassword } = user;
 
     res.json({
       user: userWithoutPassword
     });
-  } catch (error) {
-    logger.error(sanitizeError(error), 'Error fetching user');
+  } catch (err) {
+    logger.error(sanitizeError(err), 'Error fetching user');
     res.status(500).json({ error: 'Failed to fetch user data' });
   }
 });
@@ -321,8 +322,8 @@ router.post('/change-password', requireAuth, passwordChangeLimiter, validatePass
     logger.info({ userId, email: user.email }, 'Password changed successfully');
 
     res.json({ message: 'Password changed successfully' });
-  } catch (error) {
-    logger.error(sanitizeError(error), 'Password change error');
+  } catch (err) {
+    logger.error(sanitizeError(err), 'Password change error');
     res.status(500).json({ error: 'Password change failed' });
   }
 });
