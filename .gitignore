@@ -42,3 +42,8 @@ coverage/
 # OS files
 Thumbs.db
 *.bak
+
+# Vercel
+.vercel
+.vercel.json
+*.vercel.app

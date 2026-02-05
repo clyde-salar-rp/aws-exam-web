@@ -1,15 +1,16 @@
 import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { cn } from '@/lib/utils'
-import { Home, BookOpen, BarChart2, FileText, GraduationCap, Menu, X } from 'lucide-react'
+import { Home, BookOpen, BarChart2, FileText, GraduationCap, Menu, X, LogOut, User } from 'lucide-react'
 import { ThemeToggle } from './ThemeToggle'
+import { useAuth } from '@/contexts/AuthContext'
 
 interface LayoutProps {
   children: React.ReactNode
 }
 
 const navItems = [
-  { href: '/', label: 'Dashboard', icon: Home },
+  { href: '/dashboard', label: 'Dashboard', icon: Home },
   { href: '/exam', label: 'Exam', icon: GraduationCap },
   { href: '/progress', label: 'Progress', icon: BarChart2 },
   { href: '/review', label: 'Review', icon: BookOpen },
@@ -18,8 +19,10 @@ const navItems = [
 
 export function Layout({ children }: LayoutProps) {
   const location = useLocation()
+  const { user, logout } = useAuth()
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [userMenuOpen, setUserMenuOpen] = useState(false)
 
   // Close mobile menu when route changes
   useEffect(() => {
@@ -129,6 +132,68 @@ export function Layout({ children }: LayoutProps) {
             )
           })}
         </nav>
+
+        {/* User Profile - Bottom of Sidebar */}
+        {user && (
+          <div className="border-t p-2">
+            <div className="relative">
+              <button
+                onClick={() => setUserMenuOpen(!userMenuOpen)}
+                className={cn(
+                  'w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-muted transition-colors',
+                  collapsed && 'md:justify-center md:px-2'
+                )}
+                title={collapsed ? user.name : undefined}
+              >
+                {user.picture ? (
+                  <img
+                    src={user.picture}
+                    alt={user.name}
+                    className="h-8 w-8 rounded-full shrink-0"
+                  />
+                ) : (
+                  <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center shrink-0">
+                    <User className="h-4 w-4 text-primary-foreground" />
+                  </div>
+                )}
+                {!collapsed && (
+                  <div className="flex-1 text-left text-sm overflow-hidden">
+                    <p className="font-medium truncate">{user.name}</p>
+                    <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                  </div>
+                )}
+              </button>
+
+              {/* Dropdown Menu */}
+              {userMenuOpen && (
+                <>
+                  <div
+                    className="fixed inset-0 z-40"
+                    onClick={() => setUserMenuOpen(false)}
+                  />
+                  <div className={cn(
+                    "absolute bottom-full mb-2 w-56 bg-background border rounded-md shadow-lg z-50",
+                    collapsed ? "left-0" : "left-2"
+                  )}>
+                    {collapsed && (
+                      <div className="p-3 border-b">
+                        <p className="font-medium text-sm">{user.name}</p>
+                        <p className="text-xs text-muted-foreground">{user.email}</p>
+                      </div>
+                    )}
+                    <button
+                      onClick={logout}
+                      className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted transition-colors"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      Sign out
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        )}
       </aside>
 
       {/* Main content wrapper */}

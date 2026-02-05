@@ -1,13 +1,15 @@
-import { Router } from "express";
+import { Router, Response } from "express";
 import logger, { sanitizeError } from "../lib/logger.js";
+import { AuthRequest } from "../auth/middleware.js";
 import { getProgressSummary, getTopicProgress } from "../services/progressService.js";
 
 const router = Router();
 
-// GET /api/progress - Get overall progress summary
-router.get("/", async (req, res) => {
+// GET /api/progress - Get overall progress summary for authenticated user
+router.get("/", async (req: AuthRequest, res: Response) => {
   try {
-    const progress = await getProgressSummary();
+    const userId = req.user!.userId;
+    const progress = await getProgressSummary(userId);
     res.json(progress);
   } catch (error) {
     logger.error(sanitizeError(error), "Error getting progress");
@@ -15,10 +17,11 @@ router.get("/", async (req, res) => {
   }
 });
 
-// GET /api/progress/topics - Get per-topic stats
-router.get("/topics", async (req, res) => {
+// GET /api/progress/topics - Get per-topic stats for authenticated user
+router.get("/topics", async (req: AuthRequest, res: Response) => {
   try {
-    const topics = await getTopicProgress();
+    const userId = req.user!.userId;
+    const topics = await getTopicProgress(userId);
     res.json(topics);
   } catch (error) {
     logger.error(sanitizeError(error), "Error getting topic progress");

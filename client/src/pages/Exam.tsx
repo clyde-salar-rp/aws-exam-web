@@ -8,7 +8,8 @@ import { ExamConfigDialog } from '@/components/ExamConfigDialog'
 import { ResultsSummary } from '@/components/ResultsSummary'
 import { getQuestions, getTopicProgress, saveSession, getSession, getQuestion } from '@/lib/api'
 import type { ExamConfig, ExamResults, ExamState, Question } from '@/types'
-import { ChevronLeft, ChevronRight, Flag } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Flag, AlertCircle } from 'lucide-react'
+import { getFriendlyErrorMessage } from '@/lib/errorHandler'
 
 export function Exam() {
   const navigate = useNavigate()
@@ -18,6 +19,7 @@ export function Exam() {
   const [examState, setExamState] = useState<ExamState | null>(null)
   const [reviewIndex, setReviewIndex] = useState<number | null>(null)
   const [loadingSession, setLoadingSession] = useState(false)
+  const [sessionError, setSessionError] = useState<string | null>(null)
 
   const { data: topics = [] } = useQuery({
     queryKey: ['topicProgress'],
@@ -44,6 +46,7 @@ export function Exam() {
   const loadSessionForReview = async (sessionId: number) => {
     setLoadingSession(true)
     setConfigOpen(false)
+    setSessionError(null)
 
     try {
       const { session, results } = await getSession(sessionId)
@@ -83,7 +86,10 @@ export function Exam() {
         results: examResults,
       })
     } catch (error) {
-      console.error('Failed to load session:', error)
+      // Show user-friendly error message
+      const friendlyError = getFriendlyErrorMessage(error)
+      setSessionError(friendlyError.message)
+      console.error('Failed to load session:', friendlyError.message)
       // On error, show config dialog
       setConfigOpen(true)
     } finally {
@@ -219,6 +225,23 @@ export function Exam() {
             <Button onClick={() => setConfigOpen(true)}>Configure Exam</Button>
           )}
         </div>
+
+        {sessionError && (
+          <div className="flex items-center gap-2 p-4 text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/20 rounded-md border border-red-200 dark:border-red-800">
+            <AlertCircle className="h-5 w-5 shrink-0" />
+            <div>
+              <p className="font-medium">Unable to Load Exam Session</p>
+              <p className="mt-1">{sessionError}</p>
+            </div>
+            <button
+              onClick={() => setSessionError(null)}
+              className="ml-auto text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300"
+            >
+              Dismiss
+            </button>
+          </div>
+        )}
+
         <ExamConfigDialog
           open={configOpen}
           onOpenChange={setConfigOpen}

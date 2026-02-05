@@ -34,8 +34,8 @@ function calculateMastery(
   return "needs_work";
 }
 
-export async function getTopicProgress(): Promise<TopicStats[]> {
-  const dbStats = await getDbTopicStats();
+export async function getTopicProgress(userId?: string): Promise<TopicStats[]> {
+  const dbStats = await getDbTopicStats(userId);
 
   return Object.keys(SUBTOPICS).map((subtopic) => {
     const stats = dbStats[subtopic] || { total: 0, correct: 0 };
@@ -52,10 +52,10 @@ export async function getTopicProgress(): Promise<TopicStats[]> {
   });
 }
 
-export async function getProgressSummary(): Promise<ProgressSummary> {
-  const sessions = await getAllSessions();
-  const results = await getAllResults();
-  const topics = await getTopicProgress();
+export async function getProgressSummary(userId?: string): Promise<ProgressSummary> {
+  const sessions = await getAllSessions(userId);
+  const results = await getAllResults(userId);
+  const topics = await getTopicProgress(userId);
 
   const totalAnswered = results.length;
   const totalCorrect = results.filter((r) => r.is_correct).length;
