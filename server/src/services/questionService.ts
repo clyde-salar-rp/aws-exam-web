@@ -162,6 +162,12 @@ export async function selectQuestions(
   userId?: string
 ): Promise<Question[]> {
   logger.debug({ count, mode, subtopic, userId }, "Selecting questions");
+
+  // Handle invalid count
+  if (count <= 0) {
+    return [];
+  }
+
   let candidates = loadQuestions();
 
   // Apply subtopic filter if specified
