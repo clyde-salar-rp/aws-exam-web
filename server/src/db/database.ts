@@ -10,15 +10,22 @@ async function initDb(): Promise<Client> {
   const authToken = process.env.TURSO_AUTH_TOKEN;
 
   if (!dbUrl || !authToken) {
-    throw new Error("TURSO_DATABASE_URL and TURSO_AUTH_TOKEN environment variables are required");
+    const error = new Error("TURSO_DATABASE_URL and TURSO_AUTH_TOKEN environment variables are required");
+    logger.error("Database configuration missing - please set TURSO_DATABASE_URL and TURSO_AUTH_TOKEN");
+    throw error;
   }
 
-  db = createClient({
-    url: dbUrl,
-    authToken: authToken,
-  });
+  try {
+    db = createClient({
+      url: dbUrl,
+      authToken: authToken,
+    });
 
-  logger.info("Connected to Turso database");
+    logger.info("Connected to Turso database");
+  } catch (err) {
+    logger.error(sanitizeError(err), "Failed to create Turso client");
+    throw err;
+  }
 
   // Initialize schema
   await db.execute(`
@@ -544,5 +551,8 @@ export async function getTopicStats(userId?: string): Promise<Record<string, { t
   return stats;
 }
 
-// Initialize database on module load
-initDb().catch((err) => logger.error(sanitizeError(err), "Failed to initialize database"));
+// Initialize database on module load (but don't crash if it fails)
+// Database will be initialized on first request via getDb()
+if (process.env.NODE_ENV !== 'production' || process.env.VERCEL !== '1') {
+  initDb().catch((err) => logger.error(sanitizeError(err), "Failed to initialize database"));
+}
