@@ -6,19 +6,19 @@ import { Button } from '@/components/ui/button'
 import { MasteryBadge } from '@/components/MasteryBadge'
 import { getSections, getSection, getTopicProgress } from '@/lib/api'
 import type { Section } from '@/types'
-import { ArrowLeft, BookOpen } from 'lucide-react'
+import { ArrowLeft, BookOpen, Loader2 } from 'lucide-react'
 
 export function Review() {
   const [selectedSection, setSelectedSection] = useState<string | null>(null)
   const contentRef = useRef<HTMLDivElement>(null)
   const location = useLocation()
 
-  const { data: sections = [] } = useQuery({
+  const { data: sections = [], isLoading: sectionsLoading } = useQuery({
     queryKey: ['sections'],
     queryFn: getSections,
   })
 
-  const { data: topics = [] } = useQuery({
+  const { data: topics = [], isLoading: topicsLoading } = useQuery({
     queryKey: ['topicProgress'],
     queryFn: getTopicProgress,
   })
@@ -98,7 +98,10 @@ export function Review() {
         <div className="pb-16" ref={contentRef}>
           {contentLoading ? (
             <div className="flex items-center justify-center py-12">
-              <div className="text-muted-foreground">Loading content...</div>
+              <div className="flex flex-col items-center gap-4">
+                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                <div className="text-muted-foreground">Loading content...</div>
+              </div>
             </div>
           ) : (
             <Card className="max-w-5xl">
@@ -110,6 +113,17 @@ export function Review() {
               </CardContent>
             </Card>
           )}
+        </div>
+      </div>
+    )
+  }
+
+  if (sectionsLoading || topicsLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          <div className="text-muted-foreground">Loading study materials...</div>
         </div>
       </div>
     )

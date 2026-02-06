@@ -5,7 +5,7 @@ import { Progress as ProgressBar } from '@/components/ui/progress'
 import { TopicMasteryTable } from '@/components/TopicMasteryTable'
 import { SessionHistoryList } from '@/components/SessionHistoryList'
 import { getProgress, getSessions } from '@/lib/api'
-import { Target, TrendingUp, Award, BookOpen } from 'lucide-react'
+import { Target, TrendingUp, Award, BookOpen, Loader2 } from 'lucide-react'
 
 export function Progress() {
   const navigate = useNavigate()
@@ -22,7 +22,10 @@ export function Progress() {
   if (progressLoading || sessionsLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-muted-foreground">Loading...</div>
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          <div className="text-muted-foreground">Loading progress...</div>
+        </div>
       </div>
     )
   }

@@ -107,6 +107,7 @@ export function Exam() {
 
   const startExam = async (config: ExamConfig) => {
     try {
+      setConfigOpen(false)
       setIsLoadingQuestions(true)
       const questions = await getQuestions({
         mode: config.mode,
@@ -120,11 +121,11 @@ export function Exam() {
         answers: {},
         submitted: false,
       })
-      setConfigOpen(false)
       setReviewIndex(null)
     } catch (error) {
       console.error('Failed to load questions:', error)
       alert('Failed to load questions. Please try again.')
+      setConfigOpen(true)
     } finally {
       setIsLoadingQuestions(false)
     }
@@ -217,11 +218,16 @@ export function Exam() {
     setReviewIndex(null)
   }
 
-  // Show loading state when loading a session
-  if (loadingSession) {
+  // Show loading state when loading a session or questions
+  if (loadingSession || isLoadingQuestions) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-muted-foreground">Loading exam session...</div>
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          <div className="text-muted-foreground">
+            {loadingSession ? 'Loading exam session...' : 'Loading questions...'}
+          </div>
+        </div>
       </div>
     )
   }
@@ -257,7 +263,6 @@ export function Exam() {
           onOpenChange={setConfigOpen}
           onStart={startExam}
           topics={topics}
-          isLoading={isLoadingQuestions}
         />
       </div>
     )

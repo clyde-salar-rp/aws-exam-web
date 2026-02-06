@@ -17,7 +17,6 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { Loader2 } from 'lucide-react'
 import type { ExamConfig, ExamMode, TopicStats } from '@/types'
 
 interface ExamConfigDialogProps {
@@ -25,7 +24,6 @@ interface ExamConfigDialogProps {
   onOpenChange: (open: boolean) => void
   onStart: (config: ExamConfig) => void
   topics?: TopicStats[]
-  isLoading?: boolean
 }
 
 const examModes: { value: ExamMode; label: string; description: string }[] = [
@@ -43,7 +41,6 @@ export function ExamConfigDialog({
   onOpenChange,
   onStart,
   topics = [],
-  isLoading = false,
 }: ExamConfigDialogProps) {
   const [mode, setMode] = useState<ExamMode>('adaptive')
   const [questionCount, setQuestionCount] = useState(20)
@@ -132,23 +129,14 @@ export function ExamConfigDialog({
             variant="outline"
             onClick={() => onOpenChange(false)}
             className="w-full sm:w-auto"
-            disabled={isLoading}
           >
             Cancel
           </Button>
           <Button
             onClick={handleStart}
             className="w-full sm:w-auto"
-            disabled={isLoading}
           >
-            {isLoading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Loading Questions...
-              </>
-            ) : (
-              'Start Exam'
-            )}
+            Start Exam
           </Button>
         </DialogFooter>
       </DialogContent>
