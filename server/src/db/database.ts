@@ -5,7 +5,10 @@ import { fileURLToPath } from "url";
 import logger, { sanitizeError } from "../lib/logger.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const dbPath = path.join(__dirname, "..", "..", "data", "exam.db");
+// Use /tmp directory on Vercel (serverless), otherwise use local data directory
+const dbPath = process.env.VERCEL
+  ? '/tmp/exam.db'
+  : path.join(__dirname, "..", "..", "data", "exam.db");
 
 let db: SqlJsDatabase | null = null;
 
