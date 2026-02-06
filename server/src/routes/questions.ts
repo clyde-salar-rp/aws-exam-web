@@ -1,5 +1,6 @@
 import { Router } from "express";
 import logger, { sanitizeError } from "../lib/logger.js";
+import { AuthRequest } from "../auth/middleware.js";
 import {
   getAllQuestions,
   getQuestionById,
@@ -10,13 +11,14 @@ import {
 const router = Router();
 
 // GET /api/questions - Get questions with optional filters
-router.get("/", async (req, res) => {
+router.get("/", async (req: AuthRequest, res) => {
   try {
     const mode = (req.query.mode as SelectionMode) || "adaptive";
     const count = parseInt(req.query.count as string) || 20;
     const subtopic = req.query.subtopic as string | undefined;
+    const userId = req.user?.userId; // Get userId from authenticated user (optional)
 
-    const questions = await selectQuestions(count, mode, subtopic);
+    const questions = await selectQuestions(count, mode, subtopic, userId);
     res.json(questions);
   } catch (error) {
     logger.error(sanitizeError(error), "Error getting questions");

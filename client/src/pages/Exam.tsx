@@ -8,7 +8,7 @@ import { ExamConfigDialog } from '@/components/ExamConfigDialog'
 import { ResultsSummary } from '@/components/ResultsSummary'
 import { getQuestions, getTopicProgress, saveSession, getSession, getQuestion } from '@/lib/api'
 import type { ExamConfig, ExamResults, ExamState } from '@/types'
-import { ChevronLeft, ChevronRight, Flag, AlertCircle } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Flag, AlertCircle, Loader2 } from 'lucide-react'
 
 export function Exam() {
   const navigate = useNavigate()
@@ -103,21 +103,31 @@ export function Exam() {
     }
   }, [sessionError, sessionId])
 
-  const startExam = async (config: ExamConfig) => {
-    const questions = await getQuestions({
-      mode: config.mode,
-      count: config.questionCount,
-      subtopic: config.subtopic,
-    })
+  const [isLoadingQuestions, setIsLoadingQuestions] = useState(false)
 
-    setExamState({
-      questions,
-      currentIndex: 0,
-      answers: {},
-      submitted: false,
-    })
-    setConfigOpen(false)
-    setReviewIndex(null)
+  const startExam = async (config: ExamConfig) => {
+    try {
+      setIsLoadingQuestions(true)
+      const questions = await getQuestions({
+        mode: config.mode,
+        count: config.questionCount,
+        subtopic: config.subtopic,
+      })
+
+      setExamState({
+        questions,
+        currentIndex: 0,
+        answers: {},
+        submitted: false,
+      })
+      setConfigOpen(false)
+      setReviewIndex(null)
+    } catch (error) {
+      console.error('Failed to load questions:', error)
+      alert('Failed to load questions. Please try again.')
+    } finally {
+      setIsLoadingQuestions(false)
+    }
   }
 
   const handleAnswerChange = (questionId: string, answers: string[]) => {
@@ -247,6 +257,7 @@ export function Exam() {
           onOpenChange={setConfigOpen}
           onStart={startExam}
           topics={topics}
+          isLoading={isLoadingQuestions}
         />
       </div>
     )
@@ -329,11 +340,20 @@ export function Exam() {
         <Button
           variant="destructive"
           onClick={submitExam}
-          disabled={answeredCount === 0}
+          disabled={answeredCount === 0 || saveSessionMutation.isPending}
           className="w-full sm:w-auto"
         >
-          <Flag className="mr-2 h-4 w-4" />
-          Submit Exam
+          {saveSessionMutation.isPending ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Submitting...
+            </>
+          ) : (
+            <>
+              <Flag className="mr-2 h-4 w-4" />
+              Submit Exam
+            </>
+          )}
         </Button>
       </div>
 

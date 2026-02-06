@@ -54,17 +54,17 @@ export function getQuestionsBySubtopic(subtopic: string): Question[] {
 }
 
 // Adaptive selection algorithm ported from Python
-async function getTopicAccuracy(subtopic: string): Promise<number> {
-  const stats = await getTopicStats();
+async function getTopicAccuracy(subtopic: string, userId?: string): Promise<number> {
+  const stats = await getTopicStats(userId);
   const topicStat = stats[subtopic];
   if (!topicStat || topicStat.total === 0) return 0.5; // Default for unanswered
   return topicStat.correct / topicStat.total;
 }
 
-async function getTopicWeights(): Promise<Record<string, number>> {
+async function getTopicWeights(userId?: string): Promise<Record<string, number>> {
   const weights: Record<string, number> = {};
   for (const subtopic of Object.keys(SUBTOPICS)) {
-    const accuracy = await getTopicAccuracy(subtopic);
+    const accuracy = await getTopicAccuracy(subtopic, userId);
     // Lower accuracy = higher weight (more likely to be selected)
     // Range: 0.3 (for 100% accuracy) to 1.3 (for 0% accuracy)
     weights[subtopic] = 1 - accuracy + 0.3;
@@ -73,12 +73,12 @@ async function getTopicWeights(): Promise<Record<string, number>> {
   return weights;
 }
 
-async function getQuestionWeight(question: Question): Promise<number> {
-  const topicWeights = await getTopicWeights();
+async function getQuestionWeight(question: Question, userId?: string): Promise<number> {
+  const topicWeights = await getTopicWeights(userId);
   let baseWeight = topicWeights[question.subtopic] || 1.0;
 
   // Check question-specific history
-  const history = await getResultsByQuestionId(question.id);
+  const history = await getResultsByQuestionId(question.id, userId);
   if (history.length > 0) {
     // Look at last 3 attempts
     const recent = history.slice(0, 3);
@@ -95,7 +95,8 @@ async function getQuestionWeight(question: Question): Promise<number> {
 
 async function weightedRandomSelection(
   candidates: Question[],
-  count: number
+  count: number,
+  userId?: string
 ): Promise<Question[]> {
   if (candidates.length === 0) return [];
 
@@ -105,7 +106,7 @@ async function weightedRandomSelection(
   const weights = await Promise.all(
     candidates.map(async (q) => ({
       question: q,
-      weight: await getQuestionWeight(q),
+      weight: await getQuestionWeight(q, userId),
     }))
   );
 
@@ -138,9 +139,10 @@ export type SelectionMode = "adaptive" | "random" | "weak" | "missed" | "new";
 export async function selectQuestions(
   count: number,
   mode: SelectionMode = "adaptive",
-  subtopic?: string
+  subtopic?: string,
+  userId?: string
 ): Promise<Question[]> {
-  logger.debug({ count, mode, subtopic }, "Selecting questions");
+  logger.debug({ count, mode, subtopic, userId }, "Selecting questions");
   let candidates = loadQuestions();
 
   // Apply subtopic filter if specified
@@ -156,7 +158,7 @@ export async function selectQuestions(
 
     case "weak": {
       // Focus on weak topics (below 70% accuracy)
-      const stats = await getTopicStats();
+      const stats = await getTopicStats(userId);
       const weakTopics = Object.entries(stats)
         .filter(([_, stat]) => stat.total > 0 && stat.correct / stat.total < 0.7)
         .map(([topic]) => topic);
@@ -165,22 +167,22 @@ export async function selectQuestions(
       if (weakTopics.length > 0) {
         candidates = candidates.filter((q) => weakTopics.includes(q.subtopic));
       }
-      return weightedRandomSelection(candidates, count);
+      return weightedRandomSelection(candidates, count, userId);
     }
 
     case "missed": {
       // Previously missed questions
-      const missedIds = new Set(await getMissedQuestionIds());
+      const missedIds = new Set(await getMissedQuestionIds(userId));
       logger.debug({ missedCount: missedIds.size }, "Missed questions found");
       if (missedIds.size > 0) {
         candidates = candidates.filter((q) => missedIds.has(q.id));
       }
-      return weightedRandomSelection(candidates, count);
+      return weightedRandomSelection(candidates, count, userId);
     }
 
     case "new": {
       // Questions not yet answered
-      const answeredIds = new Set(await getAnsweredQuestionIds());
+      const answeredIds = new Set(await getAnsweredQuestionIds(userId));
       candidates = candidates.filter((q) => !answeredIds.has(q.id));
       logger.debug({ newCount: candidates.length }, "New questions available");
       // Random selection for new questions
@@ -190,6 +192,6 @@ export async function selectQuestions(
 
     case "adaptive":
     default:
-      return weightedRandomSelection(candidates, count);
+      return weightedRandomSelection(candidates, count, userId);
   }
 }
