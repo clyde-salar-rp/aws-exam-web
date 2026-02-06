@@ -1,6 +1,6 @@
 import pino from "pino";
 
-const isDev = process.env.NODE_ENV !== "production";
+const isDev = process.env.NODE_ENV !== "production" && !process.env.VERCEL;
 
 const logger = pino({
   level: isDev ? "debug" : "info",
