@@ -144,8 +144,16 @@ export async function getCurrentUser(): Promise<User> {
     throw new Error('Not authenticated')
   }
 
-  const data = await response.json()
-  return data.user
+  try {
+    const data = await response.json()
+    return data.user
+  } catch (err) {
+    // Handle non-JSON responses (like HTML error pages)
+    if (err instanceof SyntaxError) {
+      throw new Error('Server error. Please try again later.')
+    }
+    throw err
+  }
 }
 
 export async function loginUser(email: string, password: string): Promise<void> {
@@ -159,8 +167,16 @@ export async function loginUser(email: string, password: string): Promise<void> 
   })
 
   if (!response.ok) {
-    const data = await response.json()
-    throw new Error(getApiErrorMessage(data))
+    try {
+      const data = await response.json()
+      throw new Error(getApiErrorMessage(data))
+    } catch (err) {
+      // Handle non-JSON responses (like HTML error pages)
+      if (err instanceof SyntaxError) {
+        throw new Error('Unable to connect to the server. Please try again later.')
+      }
+      throw err
+    }
   }
 }
 
@@ -175,8 +191,16 @@ export async function registerUser(name: string, email: string, password: string
   })
 
   if (!response.ok) {
-    const data = await response.json()
-    throw new Error(getApiErrorMessage(data))
+    try {
+      const data = await response.json()
+      throw new Error(getApiErrorMessage(data))
+    } catch (err) {
+      // Handle non-JSON responses (like HTML error pages)
+      if (err instanceof SyntaxError) {
+        throw new Error('Unable to connect to the server. Please try again later.')
+      }
+      throw err
+    }
   }
 }
 
@@ -198,7 +222,15 @@ export async function changePassword(currentPassword: string, newPassword: strin
   })
 
   if (!response.ok) {
-    const data = await response.json()
-    throw new Error(getApiErrorMessage(data))
+    try {
+      const data = await response.json()
+      throw new Error(getApiErrorMessage(data))
+    } catch (err) {
+      // Handle non-JSON responses (like HTML error pages)
+      if (err instanceof SyntaxError) {
+        throw new Error('Unable to connect to the server. Please try again later.')
+      }
+      throw err
+    }
   }
 }

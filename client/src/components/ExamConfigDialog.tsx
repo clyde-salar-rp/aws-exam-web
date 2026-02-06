@@ -125,10 +125,19 @@ export function ExamConfigDialog({
         </div>
 
         <DialogFooter className="flex-col-reverse sm:flex-row gap-2 sm:gap-0">
-          <Button variant="outline" onClick={() => onOpenChange(false)} className="w-full sm:w-auto">
+          <Button
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            className="w-full sm:w-auto"
+          >
             Cancel
           </Button>
-          <Button onClick={handleStart} className="w-full sm:w-auto">Start Exam</Button>
+          <Button
+            onClick={handleStart}
+            className="w-full sm:w-auto"
+          >
+            Start Exam
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
