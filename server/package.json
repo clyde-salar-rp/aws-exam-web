@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsc && npm run copy:assets",
-    "copy:assets": "mkdir -p dist/data/sections && cp -r src/data/sections/*.md dist/data/sections/",
+    "copy:assets": "mkdir -p dist/data/sections && cp -r src/data/sections/*.md dist/data/sections/ && cp src/data/questions.json dist/data/",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
