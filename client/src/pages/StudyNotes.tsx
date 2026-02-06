@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { MasteryBadge } from '@/components/MasteryBadge'
 import { getProgress } from '@/lib/api'
-import { AlertTriangle, CheckCircle, Target, TrendingUp } from 'lucide-react'
+import { AlertTriangle, CheckCircle, Target, TrendingUp, Loader2 } from 'lucide-react'
 
 export function StudyNotes() {
   const { data: progress, isLoading } = useQuery({
@@ -14,7 +14,10 @@ export function StudyNotes() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-muted-foreground">Loading...</div>
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          <div className="text-muted-foreground">Loading study notes...</div>
+        </div>
       </div>
     )
   }
