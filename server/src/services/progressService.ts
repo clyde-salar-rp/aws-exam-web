@@ -57,10 +57,13 @@ export async function getProgressSummary(userId?: string): Promise<ProgressSumma
   const results = await getAllResults(userId);
   const topics = await getTopicProgress(userId);
 
-  const totalAnswered = results.length;
+  // Count unique questions seen (not total attempts)
+  const uniqueQuestions = new Set(results.map((r) => r.question_id));
+  const totalAnswered = uniqueQuestions.size;
+
   const totalCorrect = results.filter((r) => r.is_correct).length;
   const overallAccuracy =
-    totalAnswered > 0 ? (totalCorrect / totalAnswered) * 100 : 0;
+    results.length > 0 ? (totalCorrect / results.length) * 100 : 0;
 
   // Calculate exam readiness based on:
   // - Topic coverage (how many topics have been studied)
