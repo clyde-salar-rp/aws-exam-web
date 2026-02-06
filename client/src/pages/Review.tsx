@@ -77,7 +77,19 @@ export function Review() {
     }
   }, [sectionContent])
 
-  if (selectedSection && sectionContent) {
+  if (selectedSection) {
+    // Show loading state while content is being fetched
+    if (contentLoading || !sectionContent) {
+      return (
+        <div className="flex items-center justify-center h-64">
+          <div className="flex flex-col items-center gap-4">
+            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            <div className="text-muted-foreground">Loading section content...</div>
+          </div>
+        </div>
+      )
+    }
+
     return (
       <div className="min-h-screen">
         {/* Sticky header */}
@@ -96,23 +108,14 @@ export function Review() {
 
         {/* Content area */}
         <div className="pb-16" ref={contentRef}>
-          {contentLoading ? (
-            <div className="flex items-center justify-center py-12">
-              <div className="flex flex-col items-center gap-4">
-                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-                <div className="text-muted-foreground">Loading content...</div>
-              </div>
-            </div>
-          ) : (
-            <Card className="max-w-5xl">
-              <CardContent className="p-4 sm:p-6 md:p-8 lg:p-12">
-                <article
-                  className="study-content prose prose-slate lg:prose-lg max-w-none dark:prose-invert"
-                  dangerouslySetInnerHTML={{ __html: sectionContent.content || '' }}
-                />
-              </CardContent>
-            </Card>
-          )}
+          <Card className="max-w-5xl">
+            <CardContent className="p-4 sm:p-6 md:p-8 lg:p-12">
+              <article
+                className="study-content prose prose-slate lg:prose-lg max-w-none dark:prose-invert"
+                dangerouslySetInnerHTML={{ __html: sectionContent.content || '' }}
+              />
+            </CardContent>
+          </Card>
         </div>
       </div>
     )
