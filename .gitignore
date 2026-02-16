@@ -9,6 +9,13 @@ build/
 .env
 .env.local
 .env.*.local
+client/.env.development
+client/.env.production
+client/.env.example
+server/.env.example
+
+# Deployment documentation
+DEPLOYMENT.md
 
 # Database
 server/data/exam.db
