@@ -7,9 +7,21 @@ build/
 
 # Environment
 .env
+<<<<<<< update-obsidian-content
 .env.*
 !.env.example
 .env.check
+=======
+.env.local
+.env.*.local
+client/.env.development
+client/.env.production
+client/.env.example
+server/.env.example
+
+# Deployment documentation
+DEPLOYMENT.md
+>>>>>>> dev
 
 # Database
 server/data/exam.db
@@ -46,5 +58,4 @@ Thumbs.db
 
 # Vercel
 .vercel
-.vercel.json
 *.vercel.app

@@ -6,19 +6,19 @@ import { Button } from '@/components/ui/button'
 import { MasteryBadge } from '@/components/MasteryBadge'
 import { getSections, getSection, getTopicProgress } from '@/lib/api'
 import type { Section } from '@/types'
-import { ArrowLeft, BookOpen } from 'lucide-react'
+import { ArrowLeft, BookOpen, Loader2, ChevronLeft, ChevronRight } from 'lucide-react'
 
 export function Review() {
   const [selectedSection, setSelectedSection] = useState<string | null>(null)
   const contentRef = useRef<HTMLDivElement>(null)
   const location = useLocation()
 
-  const { data: sections = [] } = useQuery({
+  const { data: sections = [], isLoading: sectionsLoading } = useQuery({
     queryKey: ['sections'],
     queryFn: getSections,
   })
 
-  const { data: topics = [] } = useQuery({
+  const { data: topics = [], isLoading: topicsLoading } = useQuery({
     queryKey: ['topicProgress'],
     queryFn: getTopicProgress,
   })
@@ -77,7 +77,26 @@ export function Review() {
     }
   }, [sectionContent])
 
-  if (selectedSection && sectionContent) {
+  if (selectedSection) {
+    // Show loading state while content is being fetched
+    if (contentLoading || !sectionContent) {
+      return (
+        <div className="flex items-center justify-center h-64">
+          <div className="flex flex-col items-center gap-4">
+            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            <div className="text-muted-foreground">Loading section content...</div>
+          </div>
+        </div>
+      )
+    }
+
+    // Find current section index and navigation info
+    const currentIndex = sections.findIndex((s: Section) => s.id === selectedSection)
+    const hasPrevious = currentIndex > 0
+    const hasNext = currentIndex < sections.length - 1
+    const previousSection = hasPrevious ? sections[currentIndex - 1] : null
+    const nextSection = hasNext ? sections[currentIndex + 1] : null
+
     return (
       <div className="min-h-screen">
         {/* Sticky header */}
@@ -96,20 +115,53 @@ export function Review() {
 
         {/* Content area */}
         <div className="pb-16" ref={contentRef}>
-          {contentLoading ? (
-            <div className="flex items-center justify-center py-12">
-              <div className="text-muted-foreground">Loading content...</div>
-            </div>
-          ) : (
-            <Card className="max-w-5xl">
-              <CardContent className="p-4 sm:p-6 md:p-8 lg:p-12">
-                <article
-                  className="study-content prose prose-slate lg:prose-lg max-w-none dark:prose-invert"
-                  dangerouslySetInnerHTML={{ __html: sectionContent.content || '' }}
-                />
-              </CardContent>
-            </Card>
-          )}
+          <Card className="max-w-5xl">
+            <CardContent className="p-4 sm:p-6 md:p-8 lg:p-12">
+              <article
+                className="study-content prose prose-slate lg:prose-lg max-w-none dark:prose-invert"
+                dangerouslySetInnerHTML={{ __html: sectionContent.content || '' }}
+              />
+            </CardContent>
+          </Card>
+
+          {/* Navigation buttons */}
+          <div className="flex items-center justify-between max-w-5xl mt-6 gap-4">
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => setSelectedSection(previousSection?.id || null)}
+              disabled={!hasPrevious}
+              className="flex-1 max-w-xs"
+            >
+              <ChevronLeft className="mr-2 h-4 w-4" />
+              <span className="truncate">
+                {previousSection ? previousSection.display_name : 'Previous'}
+              </span>
+            </Button>
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => setSelectedSection(nextSection?.id || null)}
+              disabled={!hasNext}
+              className="flex-1 max-w-xs"
+            >
+              <span className="truncate">
+                {nextSection ? nextSection.display_name : 'Next'}
+              </span>
+              <ChevronRight className="ml-2 h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (sectionsLoading || topicsLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          <div className="text-muted-foreground">Loading study materials...</div>
         </div>
       </div>
     )

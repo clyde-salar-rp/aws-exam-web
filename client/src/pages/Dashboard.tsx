@@ -12,6 +12,7 @@ import {
   Target,
   TrendingUp,
   Award,
+  Loader2,
 } from 'lucide-react'
 
 export function Dashboard() {
@@ -45,7 +46,10 @@ export function Dashboard() {
   if (progressLoading || sessionsLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-muted-foreground">Loading...</div>
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          <div className="text-muted-foreground">Loading dashboard...</div>
+        </div>
       </div>
     )
   }
