@@ -57,11 +57,11 @@ export const SECTION_FILE_MAPPING: Record<string, string> = {
 };
 
 export function getSubtopicDisplayName(subtopic: string): string {
-  return SUBTOPICS[subtopic] || subtopic.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase());
+  return SECTIONS[subtopic] || SUBTOPICS[subtopic] || subtopic.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase());
 }
 
 export function getAllSubtopics(): Array<{ id: string; display_name: string }> {
-  return Object.entries(SUBTOPICS).map(([id, display_name]) => ({
+  return Object.entries(SECTIONS).map(([id, display_name]) => ({
     id,
     display_name,
   }));
