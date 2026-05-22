@@ -3,7 +3,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { marked } from "marked";
 import logger, { sanitizeError } from "../lib/logger.js";
-import { SUBTOPICS, SECTION_FILE_MAPPING } from "../data/topics.js";
+import { SECTIONS, SECTION_FILE_MAPPING } from "../data/topics.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const sectionsDir = path.join(__dirname, "..", "data", "sections");
@@ -38,7 +38,7 @@ export interface Section {
 }
 
 export function getAllSections(): Section[] {
-  return Object.entries(SUBTOPICS).map(([id, display_name]) => ({
+  return Object.entries(SECTIONS).map(([id, display_name]) => ({
     id,
     title: id,
     display_name,
@@ -58,7 +58,7 @@ export async function getSectionContent(id: string): Promise<Section | null> {
     return {
       id,
       title: id,
-      display_name: SUBTOPICS[id] || id,
+      display_name: SECTIONS[id] || id,
       content: html,
     };
   } catch (error) {
