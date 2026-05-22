@@ -8,7 +8,7 @@ import {
   getMissedQuestionIds,
   getAnsweredQuestionIds,
 } from "../db/database.js";
-import { SUBTOPICS } from "../data/topics.js";
+import { SECTIONS } from "../data/topics.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -65,7 +65,7 @@ async function getTopicWeights(userId?: string): Promise<Record<string, number>>
   const stats = await getTopicStats(userId);
   const weights: Record<string, number> = {};
 
-  for (const subtopic of Object.keys(SUBTOPICS)) {
+  for (const subtopic of Object.keys(SECTIONS)) {
     const topicStat = stats[subtopic];
     const accuracy = topicStat && topicStat.total > 0
       ? topicStat.correct / topicStat.total

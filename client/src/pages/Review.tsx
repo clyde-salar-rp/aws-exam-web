@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { MasteryBadge } from '@/components/MasteryBadge'
 import { getSections, getSection, getTopicProgress } from '@/lib/api'
 import type { Section } from '@/types'
-import { ArrowLeft, BookOpen, Loader2 } from 'lucide-react'
+import { ArrowLeft, BookOpen, Loader2, ChevronLeft, ChevronRight } from 'lucide-react'
 
 export function Review() {
   const [selectedSection, setSelectedSection] = useState<string | null>(null)
@@ -90,6 +90,13 @@ export function Review() {
       )
     }
 
+    // Find current section index and navigation info
+    const currentIndex = sections.findIndex((s: Section) => s.id === selectedSection)
+    const hasPrevious = currentIndex > 0
+    const hasNext = currentIndex < sections.length - 1
+    const previousSection = hasPrevious ? sections[currentIndex - 1] : null
+    const nextSection = hasNext ? sections[currentIndex + 1] : null
+
     return (
       <div className="min-h-screen">
         {/* Sticky header */}
@@ -116,6 +123,34 @@ export function Review() {
               />
             </CardContent>
           </Card>
+
+          {/* Navigation buttons */}
+          <div className="flex items-center justify-between max-w-5xl mt-6 gap-4">
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => setSelectedSection(previousSection?.id || null)}
+              disabled={!hasPrevious}
+              className="flex-1 max-w-xs"
+            >
+              <ChevronLeft className="mr-2 h-4 w-4" />
+              <span className="truncate">
+                {previousSection ? previousSection.display_name : 'Previous'}
+              </span>
+            </Button>
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => setSelectedSection(nextSection?.id || null)}
+              disabled={!hasNext}
+              className="flex-1 max-w-xs"
+            >
+              <span className="truncate">
+                {nextSection ? nextSection.display_name : 'Next'}
+              </span>
+              <ChevronRight className="ml-2 h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </div>
     )

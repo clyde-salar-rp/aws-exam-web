@@ -3,7 +3,7 @@ import {
   getAllResults,
   getTopicStats as getDbTopicStats,
 } from "../db/database.js";
-import { SUBTOPICS, getSubtopicDisplayName } from "../data/topics.js";
+import { SECTIONS, getSubtopicDisplayName } from "../data/topics.js";
 
 export interface TopicStats {
   subtopic: string;
@@ -37,7 +37,7 @@ function calculateMastery(
 export async function getTopicProgress(userId?: string): Promise<TopicStats[]> {
   const dbStats = await getDbTopicStats(userId);
 
-  return Object.keys(SUBTOPICS).map((subtopic) => {
+  return Object.keys(SECTIONS).map((subtopic) => {
     const stats = dbStats[subtopic] || { total: 0, correct: 0 };
     const accuracy = stats.total > 0 ? (stats.correct / stats.total) * 100 : 0;
 
