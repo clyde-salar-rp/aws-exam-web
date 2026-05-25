@@ -79,6 +79,7 @@ export function QuestionCard({
                 <Checkbox
                   id={`${question.id}-${option.letter}`}
                   checked={selectedAnswers.includes(option.letter)}
+                  onClick={(e) => e.stopPropagation()}
                   onCheckedChange={(checked) =>
                     handleMultiSelect(option.letter, checked as boolean)
                   }
